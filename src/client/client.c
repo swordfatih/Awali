@@ -7,7 +7,7 @@
 
 static void init(void)
 {
-#ifdef WIN32
+#ifdef _WIN32
    WSADATA wsa;
    int err = WSAStartup(MAKEWORD(2, 2), &wsa);
    if (err < 0)
@@ -20,7 +20,7 @@ static void init(void)
 
 static void end(void)
 {
-#ifdef WIN32
+#ifdef _WIN32
    WSACleanup();
 #endif
 }
@@ -40,7 +40,7 @@ static void app(const char *address, const char *name)
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
-      FD_SET(STDIN_FILENO, &rdfs);
+      FD_SET(_fileno(stdin), &rdfs);
 
       /* add the socket */
       FD_SET(sock, &rdfs);
@@ -52,7 +52,7 @@ static void app(const char *address, const char *name)
       }
 
       /* something from standard input : i.e keyboard */
-      if (FD_ISSET(STDIN_FILENO, &rdfs))
+      if (FD_ISSET(_fileno(stdin), &rdfs))
       {
          fgets(buffer, BUF_SIZE - 1, stdin);
          {

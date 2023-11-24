@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#ifdef WIN32
+#ifdef _WIN32
 
 #include <winsock2.h>
 
