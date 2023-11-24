@@ -44,7 +44,7 @@ static void app(void)
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
-      FD_SET(_fileno(stdin), &rdfs);
+      FD_SET(fileno(stdin), &rdfs);
 
       /* add the connection socket */
       FD_SET(sock, &rdfs);
@@ -62,7 +62,7 @@ static void app(void)
       }
 
       /* something from standard input : i.e keyboard */
-      if(FD_ISSET(_fileno(stdin), &rdfs))
+      if(FD_ISSET(fileno(stdin), &rdfs))
       {
          /* stop process when type on keyboard */
          break;
@@ -71,7 +71,7 @@ static void app(void)
       {
          /* new client */
          SOCKADDR_IN csin = { 0 };
-         size_t sinsize = sizeof csin;
+         socklen_t sinsize = sizeof csin;
          int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
          if(csock == SOCKET_ERROR)
          {

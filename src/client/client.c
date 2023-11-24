@@ -40,7 +40,7 @@ static void app(const char *address, const char *name)
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
-      FD_SET(_fileno(stdin), &rdfs);
+      FD_SET(fileno(stdin), &rdfs);
 
       /* add the socket */
       FD_SET(sock, &rdfs);
@@ -52,7 +52,7 @@ static void app(const char *address, const char *name)
       }
 
       /* something from standard input : i.e keyboard */
-      if (FD_ISSET(_fileno(stdin), &rdfs))
+      if (FD_ISSET(fileno(stdin), &rdfs))
       {
          fgets(buffer, BUF_SIZE - 1, stdin);
          {
