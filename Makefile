@@ -11,7 +11,7 @@ main: $(OBJECTS)
 
 $(OBJECTS): src/$$@/*.c
 	mkdir -p output
-	$(C) -o output/$@ $^ -I $(INCLUDE_DIR)/$@
+	$(C) $(CFLAGS) -o output/$@ $^ -I $(INCLUDE_DIR)/$@
 
 debug: CFLAGS := $(CFLAGS) -DMAP
 debug: main
