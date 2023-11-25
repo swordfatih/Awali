@@ -13,15 +13,17 @@ typedef struct {
 } Game;
 
 Game initGame();
-int emptyBoard(Board *b);
+int emptyBoard(Board *b, int firstCell, int lastCell);
 int testFamine(Game g, int actualPlayer);
 int isWin(Game *g, int actualPlayer);
-void showBoard(Board b);
+void showGame(Game g);
 char enterAction();
-int coupValide(Game g, char c, int actualPlayer);
+int validMove(Game g, char c, int actualPlayer);
 int charToCase(char c);
-void playMove(Game *g, char c, int actualPlayer);
+void playMove(Game *g, char c);
 int moveSeeds(Board *b, int numCase);
-
+void saveMove(Board *b, char c);
+int getNbFirstCellEaten(Board b, int arrivedCell);
+int getNbSeedsAfterEat(Board b, int arrivedCell);
 
  #endif
