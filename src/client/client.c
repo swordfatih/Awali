@@ -6,8 +6,9 @@
 #include <string.h>
 
 #include "client.h"
+#include "interface.h"
 
-static void init(void)
+void init(void)
 {
 #ifdef _WIN32
    WSADATA wsa;
@@ -20,14 +21,14 @@ static void init(void)
 #endif
 }
 
-static void end(void)
+void end(void)
 {
 #ifdef _WIN32
    WSACleanup();
 #endif
 }
 
-static void app(const char *address, const char *name)
+void app(const char *address, const char *name)
 {
    SOCKET sock = init_connection(address);
    char buffer[BUF_SIZE];
@@ -37,8 +38,13 @@ static void app(const char *address, const char *name)
    /* send our name */
    write_server(sock, name);
 
+   State state = INITIAL;
+   Data data = { state, sock };
+
    while (1)
    {
+      menu(state);
+
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
@@ -57,6 +63,7 @@ static void app(const char *address, const char *name)
       if (FD_ISSET(fileno(stdin), &rdfs))
       {
          fgets(buffer, BUF_SIZE - 1, stdin);
+
          {
             char *p = NULL;
             p = strstr(buffer, "\n");
@@ -70,7 +77,9 @@ static void app(const char *address, const char *name)
                buffer[BUF_SIZE - 1] = 0;
             }
          }
-         write_server(sock, buffer);
+
+         int choice = strtol(buffer, NULL, 10);
+         handle_choices(&data, choice);
       }
       else if (FD_ISSET(sock, &rdfs))
       {
@@ -88,7 +97,7 @@ static void app(const char *address, const char *name)
    end_connection(sock);
 }
 
-static int init_connection(const char *address)
+int init_connection(const char *address)
 {
    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
    SOCKADDR_IN sin = {0};
@@ -120,12 +129,12 @@ static int init_connection(const char *address)
    return sock;
 }
 
-static void end_connection(int sock)
+void end_connection(int sock)
 {
    closesocket(sock);
 }
 
-static int read_server(SOCKET sock, char *buffer)
+int read_server(SOCKET sock, char *buffer)
 {
    int n = 0;
 
@@ -140,7 +149,7 @@ static int read_server(SOCKET sock, char *buffer)
    return n;
 }
 
-static void write_server(SOCKET sock, const char *buffer)
+void write_server(SOCKET sock, const char *buffer)
 {
    if (send(sock, buffer, strlen(buffer), 0) < 0)
    {

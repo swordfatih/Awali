@@ -9,7 +9,7 @@ typedef struct
 {
    SOCKET sock;
    char name[BUF_SIZE];
-   char bio[BUF_SIZE];
+   char description[BUF_SIZE];
    int games[MAX_GAME];
 } Client;
 

@@ -6,9 +6,9 @@
 #include <string.h>
 
 #include "server.h"
-#include "requests.h"
+#include "handler.h"
 
-static void init(void)
+void init(void)
 {
 #ifdef _WIN32
    WSADATA wsa;
@@ -21,14 +21,14 @@ static void init(void)
 #endif
 }
 
-static void end(void)
+void end(void)
 {
 #ifdef _WIN32
    WSACleanup();
 #endif
 }
 
-static void app(void)
+void app(void)
 {
    SOCKET sock = init_connection();
    char buffer[BUF_SIZE];
@@ -119,7 +119,15 @@ static void app(void)
                }
                else
                {
-                  process_request(buffer);
+                  Request request = parse_request(buffer);
+                  Handler handler = get_handler(request.type);
+
+                  Status status = handler(request);
+
+                  if(status != OK) 
+                  {
+                     printf("Request of type %d and id %d failed\n", request.type, request.id);
+                  }
 
                   send_message_to_all_clients(clients, client, actual, buffer, 0);
                }
@@ -133,7 +141,7 @@ static void app(void)
    end_connection(sock);
 }
 
-static void clear_clients(Client *clients, int actual)
+void clear_clients(Client *clients, int actual)
 {
    int i = 0;
    for(i = 0; i < actual; i++)
@@ -142,7 +150,7 @@ static void clear_clients(Client *clients, int actual)
    }
 }
 
-static void remove_client(Client *clients, int to_remove, int *actual)
+void remove_client(Client *clients, int to_remove, int *actual)
 {
    /* we remove the client in the array */
    memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove - 1) * sizeof(Client));
@@ -150,7 +158,7 @@ static void remove_client(Client *clients, int to_remove, int *actual)
    (*actual)--;
 }
 
-static void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
+void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
 {
    int i = 0;
    char message[BUF_SIZE];
@@ -171,10 +179,13 @@ static void send_message_to_all_clients(Client *clients, Client sender, int actu
    }
 }
 
-static int init_connection(void)
+int init_connection(void)
 {
    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+   int option = 1;
    SOCKADDR_IN sin = { 0 };
+
+   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 
    if(sock == INVALID_SOCKET)
    {
@@ -201,12 +212,12 @@ static int init_connection(void)
    return sock;
 }
 
-static void end_connection(int sock)
+void end_connection(int sock)
 {
    closesocket(sock);
 }
 
-static int read_client(SOCKET sock, char *buffer)
+int read_client(SOCKET sock, char *buffer)
 {
    int n = 0;
 
@@ -222,7 +233,7 @@ static int read_client(SOCKET sock, char *buffer)
    return n;
 }
 
-static void write_client(SOCKET sock, const char *buffer)
+void write_client(SOCKET sock, const char *buffer)
 {
    if(send(sock, buffer, strlen(buffer), 0) < 0)
    {
