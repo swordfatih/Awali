@@ -3,10 +3,14 @@
 
 #include "server.h"
 
+#define MAX_GAME 1024
+
 typedef struct
 {
    SOCKET sock;
    char name[BUF_SIZE];
-}Client;
+   char bio[BUF_SIZE];
+   int games[MAX_GAME];
+} Client;
 
 #endif /* guard */
