@@ -1,3 +1,5 @@
+#define _POSIX_SOURCE
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <errno.h>
@@ -105,7 +107,7 @@ static int init_connection(const char *address)
       exit(EXIT_FAILURE);
    }
 
-   sin.sin_addr = *(IN_ADDR *)hostinfo->h_addr;
+   sin.sin_addr = *(IN_ADDR *)hostinfo->h_addr_list[0];
    sin.sin_port = htons(PORT);
    sin.sin_family = AF_INET;
 

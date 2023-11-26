@@ -5,12 +5,15 @@
 
 #include <winsock2.h>
 
-#elif defined (linux)
+#endif
+
+#ifdef __linux__
 
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include <sys/select.h>
 #include <unistd.h> /* close */
 #include <netdb.h> /* gethostbyname */
 #define INVALID_SOCKET -1
@@ -20,10 +23,6 @@ typedef int SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
 typedef struct sockaddr SOCKADDR;
 typedef struct in_addr IN_ADDR;
-
-#else
-
-#error not defined for this platform
 
 #endif
 
