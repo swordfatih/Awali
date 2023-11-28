@@ -97,8 +97,8 @@ void app(const char *address, const char *name)
 
          if(request.type == STATUS)
          {
-            Status status = strtol(strtok(request.body, SEPARATOR), NULL, 10);
-            RequestType type = strtol(strtok(request.body, SEPARATOR), NULL, 10);
+            Status status = strtol(strtok(request.body, "\n"), NULL, 10);
+            RequestType type = strtol(strtok(NULL, "\n"), NULL, 10);
 
             if(status != OK)
             {

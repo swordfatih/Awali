@@ -133,8 +133,12 @@ void app(void)
                      printf("Request of type %d and id %d failed\n", request.type, request.id);
                   }
 
-                  char body[BUF_SIZE];
+                  char body[BUF_SIZE], type_body[BUF_SIZE];
                   sprintf(body, "%d", status);
+                  sprintf(type_body, "%d", request.type);
+                  strcat(body, "\n");
+                  strcat(body, type_body);
+                  strcat(body, "\n");
 
                   char* response = format_request(STATUS, body);
                   write_client(data.clients[i].sock, response);
