@@ -30,87 +30,88 @@ void end(void)
 
 void app(const char *address, const char *name)
 {
-   SOCKET sock = init_connection(address);
-   char buffer[BUF_SIZE];
+    SOCKET sock = init_connection(address);
+    char buffer[BUF_SIZE];
+    int ex = 0;
 
-   fd_set rdfs;
+    fd_set rdfs;
 
-   /* send our name */
-   write_server(sock, name);
+    /* send our name */
+    write_server(sock, name);
 
-   State state = INITIAL;
-   Data data = { state, sock };
-   strcpy(data.name, name);
+    State state = INITIAL;
+    Data data = { state, sock };
+    strcpy(data.name, name);
 
-   menu(data.state);
+    menu(data.state);
 
-   while (1)
-   {
-      FD_ZERO(&rdfs);
+    while (ex != -1)
+    {
+        FD_ZERO(&rdfs);
 
-      /* add STDIN_FILENO */
-      FD_SET(fileno(stdin), &rdfs);
+        /* add STDIN_FILENO */
+        FD_SET(fileno(stdin), &rdfs);
 
-      /* add the socket */
-      FD_SET(sock, &rdfs);
+        /* add the socket */
+        FD_SET(sock, &rdfs);
 
-      if (select(sock + 1, &rdfs, NULL, NULL, NULL) == -1)
-      {
-         perror("select()");
-         exit(errno);
-      }
+        if (select(sock + 1, &rdfs, NULL, NULL, NULL) == -1)
+        {
+            perror("select()");
+            exit(errno);
+        }
 
-      /* something from standard input : i.e keyboard */
-      if (FD_ISSET(fileno(stdin), &rdfs))
-      {
-         fgets(buffer, BUF_SIZE - 1, stdin);
+        /* something from standard input : i.e keyboard */
+        if (FD_ISSET(fileno(stdin), &rdfs))
+        {
+            fgets(buffer, BUF_SIZE - 1, stdin);
 
-         {
-            char *p = NULL;
-            p = strstr(buffer, "\n");
-            if (p != NULL)
             {
-               *p = 0;
+                char *p = NULL;
+                p = strstr(buffer, "\n");
+                if (p != NULL)
+                {
+                *p = 0;
+                }
+                else
+                {
+                /* fclean */
+                buffer[BUF_SIZE - 1] = 0;
+                }
+            }
+
+            int choice = strtol(buffer, NULL, 10);
+            ex = handle_choices(&data, choice);
+        }
+        else if (FD_ISSET(sock, &rdfs))
+        {
+            int n = read_server(sock, buffer);
+            
+            /* server down */
+            if (n == 0)
+            {
+                printf("Server disconnected !\n");
+                break;
+            }
+
+            Request request = parse_request(buffer);
+
+            if(request.type == STATUS)
+            {
+                Status status = strtol(strtok(request.body, "\n"), NULL, 10);
+                RequestType type = strtol(strtok(NULL, "\n"), NULL, 10);
+
+                if(status != OK)
+                {
+                handle_error(status, type, &data);
+                menu(data.state);
+                }
             }
             else
             {
-               /* fclean */
-               buffer[BUF_SIZE - 1] = 0;
+                handle_request(request, &data);
+                menu(data.state);
             }
-         }
-
-         int choice = strtol(buffer, NULL, 10);
-         handle_choices(&data, choice);
-      }
-      else if (FD_ISSET(sock, &rdfs))
-      {
-         int n = read_server(sock, buffer);
-         
-         /* server down */
-         if (n == 0)
-         {
-            printf("Server disconnected !\n");
-            break;
-         }
-
-         Request request = parse_request(buffer);
-
-         if(request.type == STATUS)
-         {
-            Status status = strtol(strtok(request.body, "\n"), NULL, 10);
-            RequestType type = strtol(strtok(NULL, "\n"), NULL, 10);
-
-            if(status != OK)
-            {
-               handle_error(status, type, &data);
-               menu(data.state);
-            }
-         }
-         else
-         {
-            handle_request(request, &data);
-            menu(data.state);
-         }
       }
    }
 
@@ -180,17 +181,17 @@ void write_server(SOCKET sock, const char *buffer)
 
 int main(int argc, char **argv)
 {
-   if (argc < 2)
-   {
-      printf("Usage : %s [address] [pseudo]\n", argv[0]);
-      return EXIT_FAILURE;
-   }
+    if (argc != 3)
+    {
+        printf("Usage : %s [address] [pseudo]\n", argv[0]);
+        return EXIT_FAILURE;
+    }
 
-   init();
+    init();
 
-   app(argv[1], argv[2]);
+    app(argv[1], argv[2]);
 
-   end();
+    end();
 
-   return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

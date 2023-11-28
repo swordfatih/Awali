@@ -12,6 +12,7 @@ void menu(State state)
             printf("1. Mettre à jour votre description.\n");
             printf("2. Voir tous les joueurs.\n");
             printf("3. Defier un joueur.\n");
+            printf("4. Sortir\n");
             break;      
         case CHALLENGE:
             printf(BBLU "\n\n[Actions possibles]\n" KCYN);
@@ -34,7 +35,7 @@ void menu(State state)
    fflush(stdout);
 }
 
-void handle_choices(Data* data, int choice)
+int handle_choices(Data* data, int choice)
 {
     switch(data->state) 
     {
@@ -44,14 +45,14 @@ void handle_choices(Data* data, int choice)
             return challenge_choices(data, choice);
         case MOVE:
             return move_choices(data, choice);
-        default: 
+        default:
             break;
     }
-
     printf("\n");
+    return 0;
 }
 
-void initial_choices(Data* data, int choice)
+int initial_choices(Data* data, int choice)
 {
     switch(choice) 
     {
@@ -64,21 +65,26 @@ void initial_choices(Data* data, int choice)
         case 3:
             send_challenge_request(data);
             break;
+        case 4:
+            return -1;
+            break;
         default:
             break;
     }
+    return 0;
 }
 
-void game_choices(Data* data, int choice)
+int game_choices(Data* data, int choice)
 {
     switch(choice) 
     {
         default:
             break;
     }
+    return 0;
 }
 
-void challenge_choices(Data* data, int choice)
+int challenge_choices(Data* data, int choice)
 {
     switch(choice) 
     {
@@ -91,9 +97,10 @@ void challenge_choices(Data* data, int choice)
         default:
             break;
     }
+    return 0;
 }
 
-void move_choices(Data* data, int choice)
+int move_choices(Data* data, int choice)
 {
     switch(choice) 
     {
@@ -106,4 +113,5 @@ void move_choices(Data* data, int choice)
         default:
             break;
     }
+    return 0;
 }

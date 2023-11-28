@@ -18,4 +18,4 @@ debug: CFLAGS := $(CFLAGS) -DMAP
 debug: main
 
 clean:
-	rm -rf $(OBJECTS) $(OUTPUT)
+	rm -rf output
