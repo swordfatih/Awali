@@ -4,14 +4,15 @@ C := gcc
 CFLAGS := -std=c11 -Wall
 LDFLAGS := -lc
 INCLUDE_DIR := include
+SOURCE_DIR := src
 
 main: $(OBJECTS)
 
 .SECONDEXPANSION:
 
-$(OBJECTS): src/$$@/*.c
+$(OBJECTS): $(SOURCE_DIR)/$$@/*.c
 	mkdir -p output
-	$(C) $(CFLAGS) -o output/$@ $^ -I $(INCLUDE_DIR)/$@
+	$(C) $(CFLAGS) -o output/$@ $^ -I $(INCLUDE_DIR)/$@ -I $(INCLUDE_DIR)/shared
 
 debug: CFLAGS := $(CFLAGS) -DMAP
 debug: main

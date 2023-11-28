@@ -2,7 +2,6 @@
 #include <string.h>
 #include <stdio.h>
 #include <sys/types.h>
-#include <unistd.h>
 #include <time.h>
 
 #include "gameFunction.h"
@@ -12,7 +11,7 @@ int main (int narg, char** argv) {
     int actualPlayer = 1; ///TODO A GENERER ALEATOIREMENT
     char c = 0;
 
-//Test avec lecture d'un historique
+    //Test avec lecture d'un historique
     if (narg == 2){
         FILE *f;
         f = fopen(argv[1], "r");
@@ -56,7 +55,7 @@ int main (int narg, char** argv) {
         printf("le joueur 2 a gagné avec %d points !\n", game.score2);
     }
 
-//Ecriture de l'historique dans un fichier
+    //Ecriture de l'historique dans un fichier
     FILE *f;
     f = fopen("partie.txt", "w");
     fputs(game.board.moves, f);

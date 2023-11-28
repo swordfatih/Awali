@@ -4,11 +4,13 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 
 #include "server.h"
-#include "client.h"
+#include "handler.h"
+#include "requests.h"
 
-static void init(void)
+void init(void)
 {
 #ifdef _WIN32
    WSADATA wsa;
@@ -21,22 +23,25 @@ static void init(void)
 #endif
 }
 
-static void end(void)
+void end(void)
 {
 #ifdef _WIN32
    WSACleanup();
 #endif
 }
 
-static void app(void)
+void app(void)
 {
+   srand(time(NULL));
+
    SOCKET sock = init_connection();
    char buffer[BUF_SIZE];
    /* the index for the array */
    int actual = 0;
    int max = sock;
    /* an array for all clients */
-   Client clients[MAX_CLIENTS];
+   Data data;
+   data.matches.nb = 0;
 
    fd_set rdfs;
 
@@ -54,7 +59,7 @@ static void app(void)
       /* add socket of each client */
       for(i = 0; i < actual; i++)
       {
-         FD_SET(clients[i].sock, &rdfs);
+         FD_SET(data.clients[i].sock, &rdfs);
       }
 
       if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
@@ -73,7 +78,7 @@ static void app(void)
       {
          /* new client */
          SOCKADDR_IN csin = { 0 };
-         socklen_t sinsize = sizeof csin;
+         unsigned int sinsize = sizeof csin;
          int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
          if(csock == SOCKET_ERROR)
          {
@@ -93,9 +98,9 @@ static void app(void)
 
          FD_SET(csock, &rdfs);
 
-         Client c = { csock };
-         strncpy(c.name, buffer, BUF_SIZE - 1);
-         clients[actual] = c;
+         data.clients[actual].sock = csock;
+         strncpy(data.clients[actual].name, buffer, BUF_SIZE - 1);
+         data.clients[actual].status = FREE;
          actual++;
       }
       else
@@ -104,34 +109,52 @@ static void app(void)
          for(i = 0; i < actual; i++)
          {
             /* a client is talking */
-            if(FD_ISSET(clients[i].sock, &rdfs))
+            if(FD_ISSET(data.clients[i].sock, &rdfs))
             {
-               Client client = clients[i];
-               int c = read_client(clients[i].sock, buffer);
+               Client client = data.clients[i];
+               int c = read_client(data.clients[i].sock, buffer);
                /* client disconnected */
                if(c == 0)
                {
-                  closesocket(clients[i].sock);
-                  remove_client(clients, i, &actual);
+                  closesocket(data.clients[i].sock);
+                  data.clients[i].status = OFFLINE;
+                  remove_client(data.clients, i, &actual);
                   strncpy(buffer, client.name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  send_message_to_all_clients(clients, client, actual, buffer, 1);
+                  // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
                }
                else
                {
-                  send_message_to_all_clients(clients, client, actual, buffer, 0);
+                  Request request = parse_request(buffer);
+                  Status status = handle_request(request, &data, &data.clients[i]);
+
+                  if(status != OK) 
+                  {
+                     printf("Request of type %d and id %d failed\n", request.type, request.id);
+                  }
+
+                  char body[BUF_SIZE], type_body[BUF_SIZE];
+                  sprintf(body, "%d", status);
+                  sprintf(type_body, "%d", request.type);
+                  strcat(body, "\n");
+                  strcat(body, type_body);
+                  strcat(body, "\n");
+
+                  char* response = format_request(STATUS, body);
+                  write_client(data.clients[i].sock, response);
                }
+
                break;
             }
          }
       }
    }
 
-   clear_clients(clients, actual);
+   clear_clients(data.clients, actual);
    end_connection(sock);
 }
 
-static void clear_clients(Client *clients, int actual)
+void clear_clients(Client *clients, int actual)
 {
    int i = 0;
    for(i = 0; i < actual; i++)
@@ -140,7 +163,7 @@ static void clear_clients(Client *clients, int actual)
    }
 }
 
-static void remove_client(Client *clients, int to_remove, int *actual)
+void remove_client(Client *clients, int to_remove, int *actual)
 {
    /* we remove the client in the array */
    memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove - 1) * sizeof(Client));
@@ -148,7 +171,7 @@ static void remove_client(Client *clients, int to_remove, int *actual)
    (*actual)--;
 }
 
-static void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
+void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
 {
    int i = 0;
    char message[BUF_SIZE];
@@ -169,10 +192,13 @@ static void send_message_to_all_clients(Client *clients, Client sender, int actu
    }
 }
 
-static int init_connection(void)
+int init_connection(void)
 {
    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+   int option = 1;
    SOCKADDR_IN sin = { 0 };
+
+   setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, &option, sizeof(option));
 
    if(sock == INVALID_SOCKET)
    {
@@ -199,12 +225,12 @@ static int init_connection(void)
    return sock;
 }
 
-static void end_connection(int sock)
+void end_connection(int sock)
 {
    closesocket(sock);
 }
 
-static int read_client(SOCKET sock, char *buffer)
+int read_client(SOCKET sock, char *buffer)
 {
    int n = 0;
 
@@ -220,7 +246,7 @@ static int read_client(SOCKET sock, char *buffer)
    return n;
 }
 
-static void write_client(SOCKET sock, const char *buffer)
+void write_client(SOCKET sock, const char *buffer)
 {
    if(send(sock, buffer, strlen(buffer), 0) < 0)
    {
