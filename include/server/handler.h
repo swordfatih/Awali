@@ -20,7 +20,13 @@ typedef struct
 
 typedef struct 
 {
-    Client clients[MAX_CLIENTS];
+    int nb;
+    Client arr[MAX_CLIENTS];
+} Clients;
+
+typedef struct 
+{
+    Clients clients;
     Matches matches;
 } Data;
 

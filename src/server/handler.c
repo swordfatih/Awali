@@ -64,13 +64,12 @@ Status ask_list(Request request, Data* data, Client* client)
 {
     char texte[BUF_SIZE];
     texte[0] = '\0';
-    Client* cli = data->clients;
-    while(cli != NULL && cli->name != NULL && strlen(cli->name) > 0) {
-        strcat(texte, cli->name);
+    for (int i = 0 ; i < data->clients.nb ; ++i) {
+        Client cli = data->clients.arr[i];
+        strcat(texte, cli.name);
         strcat(texte, " : ");
-        strcat(texte, client_status_to_string(cli->status));
+        strcat(texte, client_status_to_string(cli.status));
         strcat(texte, "\n");
-        cli++;
     }
 
     char* req = format_request(ASK_LIST, texte);
@@ -84,11 +83,11 @@ Status send_challenge(Request request, Data* data, Client* client)
     client->status = BUSY;
 
     Client* adversaire = NULL;
-    for(Client* it = data->clients; it != NULL && it->name != NULL && strlen(it->name) != 0; ++it) 
+    for (int i = 0 ; i < data->clients.nb ; i++)
     {
-        if(strcmp(it->name, request.body) == 0) 
+        if(strcmp(data->clients.arr[i].name, request.body) == 0) 
         {
-            adversaire = it;
+            adversaire = &(data->clients.arr[i]);
             break;
         }
     }

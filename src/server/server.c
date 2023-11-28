@@ -32,134 +32,132 @@ void end(void)
 
 void app(void)
 {
-   srand(time(NULL));
+    srand(time(NULL));
 
-   SOCKET sock = init_connection();
-   char buffer[BUF_SIZE];
-   /* the index for the array */
-   int actual = 0;
-   int max = sock;
-   /* an array for all clients */
-   Data data;
-   data.matches.nb = 0;
+    SOCKET sock = init_connection();
+    char buffer[BUF_SIZE];
+    /* the index for the array */
+    int max = sock;
+    int i = 0;
+    /* a data structure with every clients & matches */
+    Data data;
+    data.matches.nb = 0;
+    data.clients.nb = 0;
 
-   fd_set rdfs;
+    fd_set rdfs;
 
-   while(1)
-   {
-      int i = 0;
-      FD_ZERO(&rdfs);
+    while(1)
+    {
+        printf("actual number of clients : %d\n", data.clients.nb);
+        FD_ZERO(&rdfs);
 
-      /* add STDIN_FILENO */
-      FD_SET(fileno(stdin), &rdfs);
+        /* add STDIN_FILENO */
+        FD_SET(fileno(stdin), &rdfs);
 
-      /* add the connection socket */
-      FD_SET(sock, &rdfs);
+        /* add the connection socket */
+        FD_SET(sock, &rdfs);
 
-      /* add socket of each client */
-      for(i = 0; i < actual; i++)
-      {
-         FD_SET(data.clients[i].sock, &rdfs);
-      }
+        /* add socket of each client */
+        for(i = 0; i < data.clients.nb; i++)
+        {
+            FD_SET(data.clients.arr[i].sock, &rdfs);
+        }
 
-      if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
-      {
-         perror("select()");
-         exit(errno);
-      }
+        if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
+        {
+            perror("select()");
+            exit(errno);
+        }
 
-      /* something from standard input : i.e keyboard */
-      if(FD_ISSET(fileno(stdin), &rdfs))
-      {
-         /* stop process when type on keyboard */
-         break;
-      }
-      else if(FD_ISSET(sock, &rdfs))
-      {
-         /* new client */
-         SOCKADDR_IN csin = { 0 };
-         unsigned int sinsize = sizeof csin;
-         int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
-         if(csock == SOCKET_ERROR)
-         {
-            perror("accept()");
-            continue;
-         }
-
-         /* after connecting the client sends its name */
-         if(read_client(csock, buffer) == -1)
-         {
-            /* disconnected */
-            continue;
-         }
-
-         /* what is the new maximum fd ? */
-         max = csock > max ? csock : max;
-
-         FD_SET(csock, &rdfs);
-
-         data.clients[actual].sock = csock;
-         strncpy(data.clients[actual].name, buffer, BUF_SIZE - 1);
-         data.clients[actual].status = FREE;
-         actual++;
-      }
-      else
-      {
-         int i = 0;
-         for(i = 0; i < actual; i++)
-         {
-            /* a client is talking */
-            if(FD_ISSET(data.clients[i].sock, &rdfs))
+        /* something from standard input : i.e keyboard */
+        if(FD_ISSET(fileno(stdin), &rdfs))
+        {
+            /* stop process when type on keyboard */
+            break;
+        }
+        else if(FD_ISSET(sock, &rdfs))
+        {
+            /* new client */
+            SOCKADDR_IN csin = { 0 };
+            unsigned int sinsize = sizeof csin;
+            int csock = accept(sock, (SOCKADDR *)&csin, &sinsize);
+            if(csock == SOCKET_ERROR)
             {
-               Client client = data.clients[i];
-               int c = read_client(data.clients[i].sock, buffer);
-               /* client disconnected */
-               if(c == 0)
-               {
-                  closesocket(data.clients[i].sock);
-                  data.clients[i].status = OFFLINE;
-                  remove_client(data.clients, i, &actual);
-                  strncpy(buffer, client.name, BUF_SIZE - 1);
-                  strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
-               }
-               else
-               {
-                  Request request = parse_request(buffer);
-                  Status status = handle_request(request, &data, &data.clients[i]);
-
-                  if(status != OK) 
-                  {
-                     printf("Request of type %d and id %d failed\n", request.type, request.id);
-                  }
-
-                  char body[BUF_SIZE], type_body[BUF_SIZE];
-                  sprintf(body, "%d", status);
-                  sprintf(type_body, "%d", request.type);
-                  strcat(body, "\n");
-                  strcat(body, type_body);
-                  strcat(body, "\n");
-
-                  char* response = format_request(STATUS, body);
-                  write_client(data.clients[i].sock, response);
-               }
-
-               break;
+                perror("accept()");
+                continue;
             }
-         }
-      }
-   }
 
-   clear_clients(data.clients, actual);
-   end_connection(sock);
+            /* after connecting the client sends its name */
+            if(read_client(csock, buffer) == -1)
+            {
+                /* disconnected */
+                continue;
+            }
+
+            /* what is the new maximum fd ? */
+            max = csock > max ? csock : max;
+
+            FD_SET(csock, &rdfs);
+
+            data.clients.arr[data.clients.nb].sock = csock;
+            strncpy(data.clients.arr[data.clients.nb].name, buffer, BUF_SIZE - 1);
+            data.clients.arr[data.clients.nb].status = FREE;
+            data.clients.nb++;
+        }
+        else
+        {
+            for(i = 0; i < data.clients.nb; i++)
+            {
+                /* a client is talking */
+                if(FD_ISSET(data.clients.arr[i].sock, &rdfs))
+                {
+                int c = read_client(data.clients.arr[i].sock, buffer);
+                /* client disconnected */
+                if(c == 0)
+                {
+                    closesocket(data.clients.arr[i].sock);
+                    data.clients.arr[i].status = OFFLINE;
+                    remove_client(data.clients.arr, i, &(data.clients.nb));
+                    strncpy(buffer, data.clients.arr[i].name, BUF_SIZE - 1);
+                    strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
+                    // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
+                }
+                else
+                {
+                    Request request = parse_request(buffer);
+                    Status status = handle_request(request, &data, &data.clients.arr[i]);
+
+                    if(status != OK) 
+                    {
+                        printf("Request of type %d and id %d failed\n", request.type, request.id);
+                    }
+
+                    char body[BUF_SIZE], type_body[BUF_SIZE];
+                    sprintf(body, "%d", status);
+                    sprintf(type_body, "%d", request.type);
+                    strcat(body, "\n");
+                    strcat(body, type_body);
+                    strcat(body, "\n");
+
+                    char* response = format_request(STATUS, body);
+                    write_client(data.clients.arr[i].sock, response);
+                }
+
+                break;
+                }
+            }
+        }
+    }
+
+    clear_clients(data.clients);
+    end_connection(sock);
 }
 
-void clear_clients(Client *clients, int actual)
+void clear_clients(Clients clients)
 {
-   int i = 0;
-   for(i = 0; i < actual; i++)
+   for(int i = 0; i < clients.nb; i++)
    {
-      closesocket(clients[i].sock);
+      closesocket(clients.arr[i].sock);
    }
 }
 
@@ -169,27 +167,6 @@ void remove_client(Client *clients, int to_remove, int *actual)
    memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove - 1) * sizeof(Client));
    /* number client - 1 */
    (*actual)--;
-}
-
-void send_message_to_all_clients(Client *clients, Client sender, int actual, const char *buffer, char from_server)
-{
-   int i = 0;
-   char message[BUF_SIZE];
-   message[0] = 0;
-   for(i = 0; i < actual; i++)
-   {
-      /* we don't send message to the sender */
-      if(sender.sock != clients[i].sock)
-      {
-         if(from_server == 0)
-         {
-            strncpy(message, sender.name, BUF_SIZE - 1);
-            strncat(message, " : ", sizeof message - strlen(message) - 1);
-         }
-         strncat(message, buffer, sizeof message - strlen(message) - 1);
-         write_client(clients[i].sock, message);
-      }
-   }
 }
 
 int init_connection(void)
