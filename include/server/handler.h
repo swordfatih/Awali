@@ -10,6 +10,7 @@ typedef struct
     Game game;
     Client* players[2];
     int current_player;
+    int gameOver;
 } Match;
 
 typedef struct 

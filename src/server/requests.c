@@ -25,15 +25,30 @@ char* format_request(RequestType type, char* body)
 
     return request;
 }
-
+/**
+ * Envoie le plateau de jeu : 
+ * gameOver; joueur act; score joueur act, score autre joueur
+ * plateau
+*/
 void send_game(Data* data, Client* client) 
 {
     const Match match = data->matches.arr[client->match_idx];
 
     char body[BUF_SIZE] = "\0";
 
+    char buffer[10];
+    sprintf(buffer, "%d\n", match.gameOver);
+    strcat(body, buffer);
+
     strcat(body, match.players[match.current_player]->name);
     strcat(body, "\n");
+
+    if (match.current_player == 0){
+        sprintf(buffer, "%d\n%d\n", match.game.score1, match.game.score2);
+    } else {
+        sprintf(buffer, "%d\n%d\n", match.game.score2, match.game.score1);
+    }
+    strcat(body, buffer);
 
     for(int i = 0; i < 12; ++i) 
     {

@@ -83,7 +83,7 @@ int testFamine(Game g, int actualPlayer){
  * return 3 : la partie est fini car plus de coups faisables (non implémenter)
 */
 int isWin(Game *g, int actualPlayer){
-    if (g->score1 > 24 || g->score2 > 24){
+    if (g->score1 > 1 || g->score2 > 1){
         return 1;
     }
 

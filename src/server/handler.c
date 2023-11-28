@@ -133,10 +133,15 @@ Status answer_challenge(Request request, Data* data, Client* client)
         Match match;
         match.players[0] = client;
         match.players[1] = client->current_opponent;
+        match.gameOver = 0;
         match.current_player = rand() % 2;
         match.game = initGame();
 
-        data->matches.arr[data->matches.nb++] = match;
+        client->match_idx = data->matches.nb;
+        client->current_opponent->match_idx = data->matches.nb;
+
+        data->matches.arr[data->matches.nb] = match;
+        data->matches.nb++;
 
         send_game(data, client);
         send_game(data, client->current_opponent);
@@ -148,6 +153,7 @@ Status answer_challenge(Request request, Data* data, Client* client)
 Status send_move(Request request, Data* data, Client* client)
 {
     Match* match = &data->matches.arr[client->match_idx];
+    Client *adversaire = client->current_opponent;
 
     if(validMove(match->game, request.body[0], match->current_player + 1) == 0)
     {
@@ -155,11 +161,22 @@ Status send_move(Request request, Data* data, Client* client)
     }
 
     playMove(&match->game, request.body[0]);
+    saveMove(&(match->game.board), request.body[0]);
+
+    if (isWin(&(match->game), match->current_player + 1) > 0){
+        adversaire->status = FREE;
+        adversaire->current_opponent = NULL;
+
+        client->status = FREE;
+        client->current_opponent = NULL;
+
+        match->gameOver = 1;
+    }
 
     match->current_player = (match->current_player + 1) % 2;
 
     send_game(data, client);
-    send_game(data, client->current_opponent);
+    send_game(data, adversaire);
 
     return OK;
 }
