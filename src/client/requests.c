@@ -16,16 +16,16 @@ char* format_request(RequestType type, char* body)
 
     char* request = (char*) malloc(BUF_SIZE);
     strcpy(request, id);
-    strcat(request, "\n");
+    strcat(request, SEPARATOR);
     strcat(request, type_str);
-    strcat(request, "\n");
+    strcat(request, SEPARATOR);
     strcat(request, body);
-    strcat(request, "\n");
+    strcat(request, SEPARATOR);
 
     return request;
 }
 
-void upsert_description(Data* data)
+void upsert_description_request(Data* data)
 {
     char buffer[BUF_SIZE];
     printf("Entrez votre bio: ");
@@ -36,7 +36,50 @@ void upsert_description(Data* data)
     write_server(data->sock, request);
 }
 
-void ask_list(Data* data){
+void ask_list_request(Data* data)
+{
     char* request = format_request(ASK_LIST, "Vide");
+    write_server(data->sock, request);
+}
+
+void send_challenge_request(Data* data)
+{
+    char buffer[BUF_SIZE];
+    printf("Entrez le nom de l'adversaire: ");
+    scanf("%s", buffer);
+    printf("\n");
+
+    char* request = format_request(SEND_CHALLENGE, buffer);
+    write_server(data->sock, request);
+    data->state = WAITING;
+}
+
+void answer_challenge_request(Data* data, int answer) 
+{
+    char texte[BUF_SIZE];
+    sprintf(texte, "%d", answer);
+    char* request = format_request(ANSWER_CHALLENGE, texte);
+    write_server(data->sock, request);
+
+    data->state = answer == 0 ? INITIAL : WAITING;
+}
+
+void send_move_request(Data* data)
+{
+    int valid = 0;
+    char buff[3];
+    char ch;
+    do {
+        printf("Entrez la case de votre choix : ");
+        fgets(buff, 3, stdin);
+        if(buff[1] != '\n'){
+            while (((ch = getchar()) != '\n') && (ch != EOF)){}
+            printf("Trop de caracteres\n");
+        } else {
+            valid = 1;
+        }
+    } while (valid == 0);
+
+    char* request = format_request(SEND_MOVE, buff);
     write_server(data->sock, request);
 }

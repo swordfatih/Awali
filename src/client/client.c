@@ -40,10 +40,11 @@ void app(const char *address, const char *name)
 
    State state = INITIAL;
    Data data = { state, sock };
+   strcpy(data.name, name);
 
    while (1)
    {
-      menu(state);
+      menu(data.state);
 
       FD_ZERO(&rdfs);
 
@@ -90,7 +91,14 @@ void app(const char *address, const char *name)
             printf("Server disconnected !\n");
             break;
          }
-         puts(buffer);
+
+         Request request = parse_request(buffer);
+         Status status = handle_request(request, &data);
+
+         if(status != OK) 
+         {
+            printf("Request of type %d and id %d failed\n", request.type, request.id);
+         }
       }
    }
 

@@ -31,15 +31,21 @@ typedef struct in_addr IN_ADDR;
 #define CRLF        "\r\n"
 #define PORT         1977
 #define MAX_CLIENTS  100
+#define MAX_MATCHES  100
 #define BUF_SIZE     1024
 #define BODY_SIZE 512
+#define SEPARATOR "$"
 
 /**
  * Type of a request
 */
 typedef enum {
     UPSERT_DESCRIPTION = 0,
-    ASK_LIST
+    ASK_LIST,
+    SEND_CHALLENGE,
+    ANSWER_CHALLENGE,
+    SEND_GAME,
+    SEND_MOVE
 } RequestType;
 
 /**

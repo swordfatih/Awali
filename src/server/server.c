@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 
 #include "server.h"
 #include "handler.h"
@@ -30,6 +31,8 @@ void end(void)
 
 void app(void)
 {
+   srand(time(NULL));
+
    SOCKET sock = init_connection();
    char buffer[BUF_SIZE];
    /* the index for the array */
@@ -37,6 +40,7 @@ void app(void)
    int max = sock;
    /* an array for all clients */
    Data data;
+   data.matches.nb = 0;
 
    fd_set rdfs;
 
@@ -121,7 +125,7 @@ void app(void)
                else
                {
                   Request request = parse_request(buffer);
-                  Status status = handle_request(request, &data, &client);
+                  Status status = handle_request(request, &data, &data.clients[i]);
 
                   if(status != OK) 
                   {
