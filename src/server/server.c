@@ -36,7 +36,7 @@ void app(void)
    int actual = 0;
    int max = sock;
    /* an array for all clients */
-   Client clients[MAX_CLIENTS];
+   Data data;
 
    fd_set rdfs;
 
@@ -54,7 +54,7 @@ void app(void)
       /* add socket of each client */
       for(i = 0; i < actual; i++)
       {
-         FD_SET(clients[i].sock, &rdfs);
+         FD_SET(data.clients[i].sock, &rdfs);
       }
 
       if(select(max + 1, &rdfs, NULL, NULL, NULL) == -1)
@@ -95,7 +95,7 @@ void app(void)
 
          Client c = { csock };
          strncpy(c.name, buffer, BUF_SIZE - 1);
-         clients[actual] = c;
+         data.clients[actual] = c;
          actual++;
       }
       else
@@ -104,32 +104,30 @@ void app(void)
          for(i = 0; i < actual; i++)
          {
             /* a client is talking */
-            if(FD_ISSET(clients[i].sock, &rdfs))
+            if(FD_ISSET(data.clients[i].sock, &rdfs))
             {
-               Client client = clients[i];
-               int c = read_client(clients[i].sock, buffer);
+               Client client = data.clients[i];
+               int c = read_client(data.clients[i].sock, buffer);
                /* client disconnected */
                if(c == 0)
                {
-                  closesocket(clients[i].sock);
-                  remove_client(clients, i, &actual);
+                  closesocket(data.clients[i].sock);
+                  remove_client(data.clients, i, &actual);
                   strncpy(buffer, client.name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  send_message_to_all_clients(clients, client, actual, buffer, 1);
+                  send_message_to_all_clients(data.clients, client, actual, buffer, 1);
                }
                else
                {
                   Request request = parse_request(buffer);
-                  Handler handler = get_handler(request.type);
-
-                  Status status = handler(request);
+                  Status status = handle_request(request, &data, &client);
 
                   if(status != OK) 
                   {
                      printf("Request of type %d and id %d failed\n", request.type, request.id);
                   }
 
-                  send_message_to_all_clients(clients, client, actual, buffer, 0);
+                  // send_message_to_all_clients(data.clients, client, actual, buffer, 0);
                }
                break;
             }

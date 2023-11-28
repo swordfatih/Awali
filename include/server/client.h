@@ -1,7 +1,7 @@
 #ifndef CLIENT_H
 #define CLIENT_H
 
-#include "server.h"
+#include "fatp.h"
 
 #define MAX_GAME 1024
 

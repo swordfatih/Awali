@@ -2,14 +2,16 @@
 #define HANDLER_H
 
 #include "fatp.h"
+#include "client.h"
 
-// Function pointer for request handle functions
-typedef Status (*Handler) (Request req);
-typedef Handler (*req)();
+typedef struct 
+{
+    Client clients[MAX_CLIENTS];
+} Data;
 
-Handler get_handler(RequestType type);
+Status handle_request(Request request, Data* data, Client* client);
 Request parse_request(char* buffer);
 
-Status upsert_description(Request request);
+Status upsert_description(Request request, Data* data, Client* client);
 
 #endif /* guard */

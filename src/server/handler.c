@@ -7,15 +7,15 @@
 #include "server.h"
 #include "fatp.h"
 
-Handler get_handler(RequestType type)
+Status handle_request(Request request, Data* data, Client* client)
 {
-    switch(type)
+    switch(request.type)
     {
         case UPSERT_DESCRIPTION:
-            return &upsert_description;
+            return upsert_description(request, data, client);
         default:
             printf("Unhandled request.\n");
-            return NULL;
+            return ERR_BAD_REQUEST;
     }
 }
 
@@ -30,8 +30,9 @@ Request parse_request(char* buffer)
     return request;
 }
 
-Status upsert_description(Request request)
+Status upsert_description(Request request, Data* data, Client* client)
 {
     printf("Received: %s\n", request.body);
+
     return 0;
 }
