@@ -13,5 +13,6 @@ char* format_request(RequestType type, char* body);
  * Update user's description
 */
 void upsert_description(Data* data);
+void ask_list(Data* data);
 
 #endif /* guard */

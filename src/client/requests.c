@@ -35,3 +35,8 @@ void upsert_description(Data* data)
     char* request = format_request(UPSERT_DESCRIPTION, buffer);
     write_server(data->sock, request);
 }
+
+void ask_list(Data* data){
+    char* request = format_request(ASK_LIST, "Vide");
+    write_server(data->sock, request);
+}

@@ -38,7 +38,8 @@ typedef struct in_addr IN_ADDR;
  * Type of a request
 */
 typedef enum {
-    UPSERT_DESCRIPTION = 0
+    UPSERT_DESCRIPTION = 0,
+    ASK_LIST
 } RequestType;
 
 /**

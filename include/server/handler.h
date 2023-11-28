@@ -13,5 +13,6 @@ Status handle_request(Request request, Data* data, Client* client);
 Request parse_request(char* buffer);
 
 Status upsert_description(Request request, Data* data, Client* client);
+Status ask_list(Request request, Data* data, Client* client);
 
 #endif /* guard */

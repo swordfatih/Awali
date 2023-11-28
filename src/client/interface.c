@@ -9,13 +9,13 @@ void menu(State state)
 
    switch(state)
    {
-      case INITIAL:
-         printf("1. Mettre à jour votre description.\n");
-         printf("2. Défier un ami.\n");
-         break;      
-      default:
-         printf("Aucune action possible.\n");
-         break;
+        case INITIAL:
+            printf("1. Mettre à jour votre description.\n");
+            printf("2. Voir tous les joueurs.\n");
+            break;      
+        default:
+            printf("Aucune action possible.\n");
+            break;
    }
 }
 
@@ -40,6 +40,9 @@ void initial_choices(Data* data, int choice)
     {
         case 1:
             upsert_description(data);
+            break;
+        case 2:
+            ask_list(data);
             break;
         default:
             printf("Unhandled choice.\n");

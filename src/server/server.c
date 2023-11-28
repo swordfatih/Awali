@@ -93,9 +93,9 @@ void app(void)
 
          FD_SET(csock, &rdfs);
 
-         Client c = { csock };
-         strncpy(c.name, buffer, BUF_SIZE - 1);
-         data.clients[actual] = c;
+         data.clients[actual].sock = csock;
+         strncpy(data.clients[actual].name, buffer, BUF_SIZE - 1);
+         data.clients[actual].status = FREE;
          actual++;
       }
       else
@@ -112,6 +112,7 @@ void app(void)
                if(c == 0)
                {
                   closesocket(data.clients[i].sock);
+                  data.clients[i].status = OFFLINE;
                   remove_client(data.clients, i, &actual);
                   strncpy(buffer, client.name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
@@ -135,7 +136,7 @@ void app(void)
       }
    }
 
-   clear_clients(clients, actual);
+   clear_clients(data.clients, actual);
    end_connection(sock);
 }
 
