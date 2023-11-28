@@ -8,6 +8,7 @@
 
 #include "server.h"
 #include "handler.h"
+#include "requests.h"
 
 void init(void)
 {
@@ -120,7 +121,7 @@ void app(void)
                   remove_client(data.clients, i, &actual);
                   strncpy(buffer, client.name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  send_message_to_all_clients(data.clients, client, actual, buffer, 1);
+                  // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
                }
                else
                {
@@ -132,8 +133,13 @@ void app(void)
                      printf("Request of type %d and id %d failed\n", request.type, request.id);
                   }
 
-                  // send_message_to_all_clients(data.clients, client, actual, buffer, 0);
+                  char body[BUF_SIZE];
+                  sprintf(body, "%d", status);
+
+                  char* response = format_request(STATUS, body);
+                  write_client(data.clients[i].sock, response);
                }
+
                break;
             }
          }

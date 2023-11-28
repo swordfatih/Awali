@@ -1,5 +1,5 @@
-#ifndef REQUEST_H
-#define REQUEST_H
+#ifndef REQUESTS_H
+#define REQUESTS_H
 
 #include "fatp.h"
 #include "handler.h"

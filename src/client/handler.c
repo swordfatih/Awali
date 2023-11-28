@@ -24,6 +24,19 @@ Status handle_request(Request request, Data* data)
     }
 }
 
+void handle_error(Status status, RequestType request, Data* data)
+{
+    if(status == ERR_BAD_REQUEST) 
+    {
+        printf(KRED "Erreur: mauvais input. Veuillez ressayer." KNRM);
+
+        if(request == SEND_CHALLENGE) 
+        {
+            data->state = INITIAL;
+        }
+    }
+}
+
 Request parse_request(char* buffer) 
 {
     Request request;
@@ -66,8 +79,6 @@ Status answer_challenge_handler(Request request, Data* data)
 
 Status send_game_handler(Request request, Data* data) 
 {
-    printf("Le jeu:\n%s\n", request.body);
-    
     char* player = strtok(request.body, "\n");
 
     int board[12];

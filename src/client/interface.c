@@ -5,30 +5,33 @@
 
 void menu(State state)
 {
-   printf("[ACTIONS]\n");
-
    switch(state)
    {
         case INITIAL:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
             printf("1. Mettre à jour votre description.\n");
             printf("2. Voir tous les joueurs.\n");
             printf("3. Defier un joueur.\n");
             break;      
         case CHALLENGE:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
             printf("1. Accepter.\n");
             printf("2. Refuser.\n");
             break;
         case WAITING:
-            printf("En attente du serveur...\n");
+            printf(BBLU "En attente du serveur...\n" KCYN);
             break;
         case MOVE:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
             printf("1. Jouer.\n");
             printf("2. Quitter la partie.\n");
             break;
         default:
-            printf("Aucune action possible.\n");
-            break;
+            return;
    }
+
+   printf("\n" KNRM);
+   fflush(stdout);
 }
 
 void handle_choices(Data* data, int choice)
@@ -36,14 +39,11 @@ void handle_choices(Data* data, int choice)
     switch(data->state) 
     {
         case INITIAL:
-            initial_choices(data, choice);
-            break;
+            return initial_choices(data, choice);
         case CHALLENGE:
-            challenge_choices(data, choice);
-            break;
+            return challenge_choices(data, choice);
         case MOVE:
-            move_choices(data, choice);
-            break;
+            return move_choices(data, choice);
         default: 
             break;
     }
@@ -65,7 +65,6 @@ void initial_choices(Data* data, int choice)
             send_challenge_request(data);
             break;
         default:
-            printf("Unhandled initial choice.\n");
             break;
     }
 }
@@ -75,7 +74,6 @@ void game_choices(Data* data, int choice)
     switch(choice) 
     {
         default:
-            printf("Unhandled game choice.\n");
             break;
     }
 }
@@ -91,7 +89,6 @@ void challenge_choices(Data* data, int choice)
             answer_challenge_request(data, 0);
             break;
         default:
-            printf("Unhandled challenge choice.\n");
             break;
     }
 }
@@ -107,7 +104,6 @@ void move_choices(Data* data, int choice)
             // quitter la partie
             break;
         default:
-            printf("Unhandled move choice.\n");
             break;
     }
 }

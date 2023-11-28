@@ -69,6 +69,7 @@ void send_move_request(Data* data)
     int valid = 0;
     char buff[3];
     char ch;
+    
     do {
         printf("Entrez la case de votre choix : ");
         fgets(buff, 3, stdin);

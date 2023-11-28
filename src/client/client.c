@@ -42,10 +42,10 @@ void app(const char *address, const char *name)
    Data data = { state, sock };
    strcpy(data.name, name);
 
+   menu(data.state);
+
    while (1)
    {
-      menu(data.state);
-
       FD_ZERO(&rdfs);
 
       /* add STDIN_FILENO */
@@ -85,6 +85,7 @@ void app(const char *address, const char *name)
       else if (FD_ISSET(sock, &rdfs))
       {
          int n = read_server(sock, buffer);
+         
          /* server down */
          if (n == 0)
          {
@@ -93,11 +94,22 @@ void app(const char *address, const char *name)
          }
 
          Request request = parse_request(buffer);
-         Status status = handle_request(request, &data);
 
-         if(status != OK) 
+         if(request.type == STATUS)
          {
-            printf("Request of type %d and id %d failed\n", request.type, request.id);
+            Status status = strtol(strtok(request.body, SEPARATOR), NULL, 10);
+            RequestType type = strtol(strtok(request.body, SEPARATOR), NULL, 10);
+
+            if(status != OK)
+            {
+               handle_error(status, type, &data);
+               menu(data.state);
+            }
+         }
+         else
+         {
+            handle_request(request, &data);
+            menu(data.state);
          }
       }
    }

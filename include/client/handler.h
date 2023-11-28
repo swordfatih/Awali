@@ -19,6 +19,7 @@ typedef struct
 } Data;
 
 Status handle_request(Request request, Data* data);
+void handle_error(Status status, RequestType request, Data* data);
 Request parse_request(char* buffer);
 
 Status ask_list_handler(Request request, Data* data);

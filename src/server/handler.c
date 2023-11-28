@@ -45,7 +45,7 @@ Request parse_request(char* buffer)
 
     char* body = strtok(NULL, SEPARATOR);
 
-    if(body != NULL) 
+    if(body != NULL && strlen(body) > 0) 
     {
         strcpy(request.body, body);
     }
@@ -55,9 +55,9 @@ Request parse_request(char* buffer)
 
 Status upsert_description(Request request, Data* data, Client* client)
 {
-    printf("Received: %s\n", request.body);
+    strcpy(client->description, request.body);
 
-    return 0;
+    return OK;
 }
 
 Status ask_list(Request request, Data* data, Client* client)
@@ -72,8 +72,10 @@ Status ask_list(Request request, Data* data, Client* client)
         strcat(texte, "\n");
         cli++;
     }
+
     char* req = format_request(ASK_LIST, texte);
     write_client(client->sock, req);
+
     return OK;
 }
 
@@ -93,15 +95,12 @@ Status send_challenge(Request request, Data* data, Client* client)
 
     if(adversaire == NULL) 
     {
-        perror("adversaire inconnue");
         return ERR_BAD_REQUEST;
     }
 
-    ///verifier que l'adversaire est dispo
     if(adversaire->status != FREE) 
     {
-        perror("adversaire occupe");
-        return ERR_INGAME;
+        return ERR_BUSY;
     }
 
     client->current_opponent = adversaire;
@@ -153,7 +152,6 @@ Status send_move(Request request, Data* data, Client* client)
 
     if(validMove(match->game, request.body[0], match->current_player + 1) == 0)
     {
-        perror("Wrong move");
         return ERR_BAD_REQUEST;
     }
 
