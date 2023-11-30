@@ -7,11 +7,11 @@
 void init(void);
 void end(void);
 void app(void);
-int init_connection(void);
+int  init_connection(void);
 void end_connection(int sock);
-int read_client(SOCKET sock, char *buffer);
-void write_client(SOCKET sock, const char *buffer);
-void remove_client(Client *clients, int to_remove, int *actual);
+int  read_client(SOCKET sock, char* buffer);
+void write_client(SOCKET sock, const char* buffer);
+void remove_client(Client* clients, int to_remove, int* actual);
 void clear_clients(Clients clients);
 
 #endif /* guard */

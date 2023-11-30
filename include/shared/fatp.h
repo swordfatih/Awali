@@ -65,7 +65,9 @@ typedef enum {
     SEND_MOVE,
     STATUS,
     FORFEIT,
-    SEND_CHAT
+    SEND_CHAT,
+    START_SPECTATE,
+    STOP_SPECTATE,
 } RequestType;
 
 /**
