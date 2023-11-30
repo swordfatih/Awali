@@ -27,7 +27,7 @@ char* format_request(RequestType type, char* body)
 }
 /**
  * Envoie le plateau de jeu : 
- * gameOver; joueur act; score joueur act, score autre joueur
+ * gameOver;nomJoueur1;scoreJoueur1;nomJoueur2;ScoreJoueur2;n°joueurAct
  * plateau
 */
 void send_game(Data* data, Client* client) 
@@ -35,21 +35,27 @@ void send_game(Data* data, Client* client)
     const Match match = data->matches.arr[client->match_idx];
 
     char body[BUF_SIZE] = "\0";
+    char buffer[100];
 
-    char buffer[10];
+    //game over
     sprintf(buffer, "%d\n", match.gameOver);
     strcat(body, buffer);
 
-    strcat(body, match.players[match.current_player]->name);
-    strcat(body, "\n");
-
-    if (match.current_player == 0){
-        sprintf(buffer, "%d\n%d\n", match.game.score1, match.game.score2);
-    } else {
-        sprintf(buffer, "%d\n%d\n", match.game.score2, match.game.score1);
-    }
+    //joueur1 info
+    strcat(body, match.players[0]->name);
+    sprintf(buffer, "\n%d\n", match.game.score1);
     strcat(body, buffer);
 
+    //joueur2 info
+    strcat(body, match.players[1]->name);
+    sprintf(buffer, "\n%d\n", match.game.score2);
+    strcat(body, buffer);
+
+    //numero du joueur act
+    sprintf(buffer, "%d\n", match.current_player);
+    strcat(body, buffer);
+
+    //etat de chaque case
     for(int i = 0; i < 12; ++i) 
     {
         char value[4];

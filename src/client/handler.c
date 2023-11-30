@@ -82,44 +82,45 @@ Status answer_challenge_handler(Request request, Data* data)
 Status send_game_handler(Request request, Data* data) 
 {
     int gameOver = strtol(strtok(request.body, "\n"), NULL, 10);
-    char* player = strtok(NULL, "\n");
-    int score1 = strtol(strtok(NULL, "\n"), NULL, 10);
-    int score2 = strtol(strtok(NULL, "\n"), NULL, 10);
-    if (strcmp(data->name, player) == 0){
-        //C'est a mon tour de jouer + j'ai le score1
-        data->state = MOVE;
-        if (gameOver){
-            if (score1 > score2){
-                printf("Vous avez gagné avec %d points contre %d points\nFelicitation\n", score1, score2);
-            } else {
-                printf("Vous perdez avec %d points contre %d points\n", score1, score2);
-            }
-            data->state = INITIAL;
-        } else {
-            printf("Votre score : %d\tScore adversaire : %d\n", score1, score2);
-            printf("C'est à vous de jouer\n");
-        }
-    } else {
-        //C'est au tour de l'adv + j'ai le score 2
-        data->state = WAITING;
-        if (gameOver){
-            if (score2 > score1){
-                printf("Vous avez gagné avec %d points contre %d points\nFelicitation\n", score2, score1);
-            } else {
-                printf("Vous perdez avec %d points contre %d points\n", score2, score1);
-            }
-            data->state = INITIAL;
-        } else {
-            printf("Votre score : %d\tScore adversaire : %d\n", score2, score1);
-            printf("En attente du coup de l'adversaire\n");
-        }
-    }
+
+    char* players[2];
+    int scores[2];
+    players[0] = strtok(NULL, "\n");
+    scores[0] = strtol(strtok(NULL, "\n"), NULL, 10);
+    players[1] = strtok(NULL, "\n");
+    scores[1] = strtol(strtok(NULL, "\n"), NULL, 10);
+
+    int actual_player = strtol(strtok(NULL, "\n"), NULL, 10);
 
     int board[12];
     for(int i = 0; i < 12; ++i)
     {
         board[i] = strtol(strtok(NULL, "\n"), NULL, 10);
     }
+
+    int me = (strcmp(data->name, players[0]) == 0) ? 0 : 1;
+    int adv = (me+1)%2;
+
+    if (gameOver == 1) {
+        if (actual_player == me) {
+            printf("Vous avez perdu avec un score de %d contre %d\n", scores[adv], scores[me]);
+        } else {
+            printf("Vous avez gagné avec un score de %d contre %d\n", scores[me], scores[adv]);
+        }
+        data->state = INITIAL;
+    }
+    else {
+        printf("Votre score : %d\t Score de %s : %d\n", scores[me], players[adv], scores[adv]);
+        if(actual_player == me) {
+            printf("C'est a votre tour : \n");
+            data->state = MOVE;
+        } else {
+            printf("Tour de l'adversaire : \n");
+            data->state = WAITING;
+        }
+    }
+
+    printf("\n");
 
     int i;
     for(i = 65; i < 65+6; i++) 
