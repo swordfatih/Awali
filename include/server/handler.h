@@ -16,7 +16,7 @@ typedef struct
     Game       game;
     Client*    players[2];
     int        current_player;
-    int        gameOver;
+    int        game_over;
     Spectators spectators;
     int public;
 } Match;

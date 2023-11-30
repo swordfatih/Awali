@@ -44,7 +44,7 @@ void broadcast_match(Data* data, int match_idx)
 
 /**
  * Envoie le plateau de jeu :
- * gameOver;nomJoueur1;scoreJoueur1;nomJoueur2;ScoreJoueur2;n°joueurAct
+ * game_over;nomJoueur1;scoreJoueur1;nomJoueur2;ScoreJoueur2;n°joueurAct
  * plateau
  */
 void send_match(const Match* match, Client* client)
@@ -53,7 +53,7 @@ void send_match(const Match* match, Client* client)
     char buffer[100];
 
     // game over
-    sprintf(buffer, "%d\n", match->gameOver);
+    sprintf(buffer, "%d\n", match->game_over);
     strcat(body, buffer);
 
     // joueur1 info

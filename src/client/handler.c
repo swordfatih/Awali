@@ -125,7 +125,7 @@ Status send_challenge_handler(Request request, Data* data)
 
 Status answer_challenge_handler(Request request, Data* data)
 {
-    printf("Votre adversaire a refusé votre demande :(\n");
+    printf(KRED "Votre adversaire a refusé votre demande :(\n" KNRM);
     set_state(data, INITIAL);
 
     return OK;
@@ -133,7 +133,7 @@ Status answer_challenge_handler(Request request, Data* data)
 
 Status send_game_handler(Request request, Data* data)
 {
-    int   game_over = strtol(strtok(request.body, "\n"), NULL, 10);
+    int game_over = strtol(strtok(request.body, "\n"), NULL, 10);
 
     char* players[2];
     int   scores[2];
@@ -239,13 +239,13 @@ Status send_game_handler(Request request, Data* data)
 
     if (game_over == 1)
     {
-        if(me != player) 
+        if (me != player)
         {
             printf(KGRN KBLD "%s" KNRM KGRN " a gagné avec un score de " KNRM KGRN KBLD "%d" KNRM KGRN " contre " KNRM KGRN KBLD "%d" KNRM KGRN ".\nFélicitations !\n" KNRM, players[opponent], scores[opponent], scores[player]);
         }
         else
         {
-            printf(KRED KBLD "Vous" KNRM KRED " avez perdu avec un score de " KNRM KRED KBLD "%d" KNRM KRED " contre " KNRM KRED KBLD "%d" KNRM KRED ".\nNe baissez pas les bras !\n" KNRM, scores[player], scores[opponent]);   
+            printf(KRED KBLD "Vous" KNRM KRED " avez perdu avec un score de " KNRM KRED KBLD "%d" KNRM KRED " contre " KNRM KRED KBLD "%d" KNRM KRED ".\nNe baissez pas les bras !\n" KNRM, scores[player], scores[opponent]);
         }
 
         set_state(data, INITIAL);
@@ -256,7 +256,7 @@ Status send_game_handler(Request request, Data* data)
 
 Status forfeit_handler(Request request, Data* data)
 {
-    printf("L'adversaire a déclaré forfait, vous gagnez !\n\n");
+    printf(KGRN KBLD "L'adversaire a déclaré forfait, %s remporte la partie !\n\n" KNRM, request.body);
     set_state(data, INITIAL);
 
     return OK;

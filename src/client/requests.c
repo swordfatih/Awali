@@ -95,7 +95,7 @@ void send_move_request(Data* data)
 
 void send_forfait_request(Data* data)
 {
-    printf("Vous perdez la partie par abandon!\n");
+    printf(KRED "Vous perdez la partie par abandon!\n" KNRM);
     char request[BUF_SIZE];
     format_request(FORFEIT, "Vide", request);
     write_server(data->sock, request);

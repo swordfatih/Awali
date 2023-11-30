@@ -168,7 +168,7 @@ Status answer_challenge(Request request, Data* data, Client* client)
         Match match;
         match.players[0] = client;
         match.players[1] = client->current_opponent;
-        match.gameOver = 0;
+        match.game_over = 0;
         match.current_player = rand() % 2;
         match.game = initGame();
 
@@ -177,6 +177,8 @@ Status answer_challenge(Request request, Data* data, Client* client)
 
         data->matches.arr[data->matches.nb] = match;
         data->matches.nb++;
+
+        match.spectators.nb = 0;
 
         broadcast_match(data, client->match_idx);
     }
@@ -205,17 +207,17 @@ Status send_move(Request request, Data* data, Client* client)
         client->status = FREE;
         client->current_opponent = NULL;
 
-        for(int i = 0; i < match->spectators.nb; ++i)
+        for (int i = 0; i < match->spectators.nb; ++i)
         {
             Client* spectator = match->spectators.arr[i];
-            
-            if(spectator != NULL)
+
+            if (spectator != NULL)
             {
                 spectator->status = FREE;
             }
         }
 
-        match->gameOver = 1;
+        match->game_over = 1;
     }
 
     match->current_player = (match->current_player + 1) % 2;
@@ -230,6 +232,8 @@ Status declare_forfeit(Request request, Data* data, Client* client)
     Match*  match = &data->matches.arr[client->match_idx];
     Client* adversaire = client->current_opponent;
 
+    printf("moi: %s\nadversaire:%s\n", client->name, adversaire->name);
+
     // fin de la partie
     adversaire->status = FREE;
     adversaire->current_opponent = NULL;
@@ -237,11 +241,24 @@ Status declare_forfeit(Request request, Data* data, Client* client)
     client->status = FREE;
     client->current_opponent = NULL;
 
-    match->gameOver = 1;
+    match->game_over = 1;
+
+    printf("before\n");
 
     char req[BUF_SIZE];
-    format_request(FORFEIT, "Vide", req);
+    format_request(FORFEIT, adversaire->name, req);
     write_client(adversaire->sock, req);
+
+    printf("after\n");
+    for (int i = 0; i < match->spectators.nb; i++)
+    {
+        if (match->spectators.arr[i] != NULL)
+        {
+            printf("while %d\n", i);
+            match->spectators.arr[i]->status = FREE;
+            write_client(match->spectators.arr[i]->sock, req);
+        }
+    }
 
     return OK;
 }

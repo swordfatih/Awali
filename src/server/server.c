@@ -103,6 +103,8 @@ void app(void)
             strncpy(data.clients.arr[data.clients.nb].name, buffer, BUF_SIZE - 1);
             data.clients.arr[data.clients.nb].status = FREE;
             data.clients.nb++;
+
+            printf(KGRN "%s joined.\n" KNRM, buffer);
         }
         else
         {
@@ -117,10 +119,7 @@ void app(void)
                     {
                         closesocket(data.clients.arr[i].sock);
                         data.clients.arr[i].status = OFFLINE;
-                        remove_client(data.clients.arr, i, &(data.clients.nb));
-                        strncpy(buffer, data.clients.arr[i].name, BUF_SIZE - 1);
-                        strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                        // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
+                        remove_client(&data, data.clients.arr, i, &(data.clients.nb));
                     }
                     else
                     {
@@ -162,8 +161,15 @@ void clear_clients(Clients clients)
     }
 }
 
-void remove_client(Client* clients, int to_remove, int* actual)
+void remove_client(Data* data, Client* clients, int to_remove, int* actual)
 {
+    if(clients[to_remove].current_opponent != NULL)
+    {
+        printf(KRED "%s disconnected.\n" KNRM, clients[to_remove].name);
+        Request request = {};
+        declare_forfeit(request, data, &clients[to_remove]);
+    }
+
     /* we remove the client in the array */
     memmove(clients + to_remove, clients + to_remove + 1, (*actual - to_remove - 1) * sizeof(Client));
     /* number client - 1 */
