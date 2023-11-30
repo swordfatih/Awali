@@ -180,61 +180,61 @@ Status send_game_handler(Request request, Data* data)
     printf("\n");
 
     int i;
-    if (me == 1)
+    if (me == 1 || (me == -1 && player == 1))
     {
-        printf(KGRA "┌───┬───┬───┬───┬───┬───┐\n" KNRM);
+        printf(KGRA "┌────┬────┬────┬────┬────┬────┐\n" KNRM);
         for (i = 65; i < 65 + 6; i++)
         {
             printf(KGRA "│" KNRM);
-            printf(" %c ", i);
+            printf(" %c  ", i);
         }
-        printf(KGRA "│\n├───┼───┼───┼───┼───┼───┤\n" KNRM);
+        printf(KGRA "│\n├────┼────┼────┼────┼────┼────┤\n" KNRM);
         for (i = 0; i < 6; i++)
         {
             printf(KGRA "│" KNRM);
-            printf(" %d ", board[i]);
+            printf(" %-2d ", board[i]);
         }
-        printf(KGRA "│\n├───┼───┼───┼───┼───┼───┤\n" KNRM);
+        printf(KGRA "│\n├────┼────┼────┼────┼────┼────┤\n" KNRM);
         for (i = 11; i > 5; i--)
         {
             printf(KGRA "│" KNRM);
-            printf(" %d ", board[i]);
+            printf(" %-2d ", board[i]);
         }
-        printf(KGRA "│\n├───┼───┼───┼───┼───┼───┤\n" KNRM);
+        printf(KGRA "│\n├────┼────┼────┼────┼────┼────┤\n" KNRM);
         for (i = 97; i < 97 + 6; i++)
         {
             printf(KGRA "│" KNRM);
-            printf(" %c ", i);
+            printf(" %c  ", i);
         }
-        printf(KGRA "│\n└───┴───┴───┴───┴───┴───┘\n" KNRM);
+        printf(KGRA "│\n└────┴────┴────┴────┴────┴────┘\n" KNRM);
     }
     else
     {
-        printf(KGRA "┌───┬───┬───┬───┬───┬───┐\n" KNRM);
+        printf(KGRA "┌────┬────┬────┬────┬────┬────┐\n" KNRM);
         for (i = 102; i >= 97; i--)
         {
             printf(KGRA "│" KNRM);
-            printf(" %c ", i);
+            printf(" %c  ", i);
         }
-        printf(KGRA "│\n├───┼───┼───┼───┼───┼───┤\n" KNRM);
+        printf(KGRA "│\n├────┼────┼────┼────┼────┼────┤\n" KNRM);
         for (i = 6; i < 12; i++)
         {
             printf(KGRA "│" KNRM);
-            printf(" %d ", board[i]);
+            printf(" %-2d ", board[i]);
         }
-        printf(KGRA "│\n├───┼───┼───┼───┼───┼───┤\n" KNRM);
+        printf(KGRA "│\n├────┼────┼────┼────┼────┼────┤\n" KNRM);
         for (i = 5; i >= 0; i--)
         {
             printf(KGRA "│" KNRM);
-            printf(" %d ", board[i]);
+            printf(" %-2d ", board[i]);
         }
-        printf(KGRA "│\n├───┼───┼───┼───┼───┼───┤\n" KNRM);
+        printf(KGRA "│\n├────┼────┼────┼────┼────┼────┤\n" KNRM);
         for (i = 70; i >= 65; i--)
         {
             printf(KGRA "│" KNRM);
-            printf(" %c ", i);
+            printf(" %c  ", i);
         }
-        printf(KGRA "│\n└───┴───┴───┴───┴───┴───┘\n" KNRM);
+        printf(KGRA "│\n└────┴────┴────┴────┴────┴────┘\n" KNRM);
     }
 
     if (game_over == 1)
