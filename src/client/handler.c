@@ -103,19 +103,19 @@ Status send_game_handler(Request request, Data* data)
 
     if (gameOver == 1) {
         if (actual_player == me) {
-            printf("Vous avez perdu avec un score de %d contre %d\n", scores[adv], scores[me]);
+            printf("Vous avez perdu avec un score de %d contre %d.\nPeut être la suivante !\n", scores[adv], scores[me]);
         } else {
-            printf("Vous avez gagné avec un score de %d contre %d\n", scores[me], scores[adv]);
+            printf("Vous avez gagné avec un score de %d contre %d.\nFélicitations\n", scores[me], scores[adv]);
         }
         data->state = INITIAL;
     }
     else {
-        printf("Votre score : %d\t Score de %s : %d\n", scores[me], players[adv], scores[adv]);
+        printf("Votre score : %d\tScore de %s : %d\n", scores[me], players[adv], scores[adv]);
         if(actual_player == me) {
-            printf("C'est a votre tour : \n");
+            printf("C'est a votre tour :\n");
             data->state = MOVE;
         } else {
-            printf("Tour de l'adversaire : \n");
+            printf("Tour de l'adversaire :\n");
             data->state = WAITING;
         }
     }
@@ -123,26 +123,49 @@ Status send_game_handler(Request request, Data* data)
     printf("\n");
 
     int i;
-    for(i = 65; i < 65+6; i++) 
-    {
-        printf(" %c", i);
+    if (me == 1) {
+        for(i = 65; i < 65+6; i++) 
+        {
+            printf(" %c", i);
+        }
+        printf("\n");
+        for(i = 0; i < 6; i++) 
+        {
+            printf("|%d", board[i]);
+        }
+        printf("|\n");
+        for(i = 11; i > 5; i--) 
+        { 
+            printf("|%d", board[i]);
+        }
+        printf("|\n");
+        for(i = 97; i < 97+6; i++) 
+        {
+            printf(" %c", i);
+        }
+        printf("\n");
+    } else {
+        for(i = 102; i >= 97 ; i--) 
+        {
+            printf(" %c", i);
+        }
+        printf("\n");
+        for(i = 6; i < 12; i++) 
+        {
+            printf("|%d", board[i]);
+        }
+        printf("|\n");
+        for(i = 5; i >= 0; i--) 
+        { 
+            printf("|%d", board[i]);
+        }
+        printf("|\n");
+        for(i = 70 ; i >= 65; i--) 
+        {
+            printf(" %c", i);
+        }
+        printf("\n");
     }
-    printf("\n");
-    for(i = 0; i < 6; i++) 
-    {
-        printf("|%d", board[i]);
-    }
-    printf("|\n");
-    for(i = 11; i > 5; i--) 
-    { 
-        printf("|%d", board[i]);
-    }
-    printf("|\n");
-    for(i = 97; i < 97+6; i++) 
-    {
-        printf(" %c", i);
-    }
-    printf("\n");
 
     return OK;
 }
