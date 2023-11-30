@@ -1,5 +1,5 @@
-#ifndef GAME_H
-#define GAME_H
+#ifndef GAMEFUNCTION_H
+#define GAMEFUNCTION_H
 
 typedef struct
 {
