@@ -50,6 +50,9 @@ typedef struct in_addr IN_ADDR;
 // bold colors
 #define BBLU  "\033[1;94m"
 
+// background
+#define BGMAG "\x1b[45m"
+
 /**
  * Type of a request
 */

@@ -4,11 +4,11 @@ const char* client_status_to_string(ClientState s){
    switch (s)
    {
    case FREE:
-      return "free";
+      return KGRN "free" KNRM;
    case BUSY:
-      return "busy";
+      return KRED "busy" KNRM;
    case OFFLINE:
-      return "offline";
+      return KGRA "offline" KNRM;
    default:
       return "unknown status";
    }

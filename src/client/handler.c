@@ -68,14 +68,33 @@ Request parse_request(char* buffer)
 
 Status ask_list_handler(Request request, Data* data)
 {
-    printf("La liste des joueurs:\n");
-    if(strlen(request.body) <= 1)
+    int count = strtol(strtok(request.body, "\n"), NULL, 10);
+    
+    if(count == 0)
     {
         printf(KRED "Il n'y a aucun autre joueur.\n" KNRM);
     }
-    else
+    else 
     {
-        printf("%s\n", request.body);
+        for(int i = 0; i < count; ++i)
+        {
+            char* name = strtok(NULL, "\n");
+            char* status = strtok(NULL, "\n");
+            char* has_desc = strtok(NULL, "\n");
+            char* description = NULL;
+
+            if(strcmp(has_desc, "1") == 0)
+            {
+                description = strtok(NULL, "\n");
+            }
+
+            printf(KCYN "%s" KNRM " (%s)\n", name, status);
+
+            if(description != NULL)
+            {
+                printf(KGRA "-> %s\n" KNRM, description);
+            }
+        }
     }
     
     return OK;
@@ -108,7 +127,7 @@ Status send_game_handler(Request request, Data* data)
     players[1] = strtok(NULL, "\n");
     scores[1] = strtol(strtok(NULL, "\n"), NULL, 10);
 
-    int actual_player = strtol(strtok(NULL, "\n"), NULL, 10);
+    int current_player = strtol(strtok(NULL, "\n"), NULL, 10);
 
     int board[12];
     for(int i = 0; i < 12; ++i)
@@ -120,7 +139,7 @@ Status send_game_handler(Request request, Data* data)
     int adv = (me+1)%2;
 
     if (gameOver == 1) {
-        if(actual_player == me) 
+        if(current_player == me) 
         {
             printf("Vous avez perdu avec un score de %d contre %d.\nPeut être la suivante !\n", scores[adv], scores[me]);
         }
@@ -131,18 +150,9 @@ Status send_game_handler(Request request, Data* data)
         set_state(data, INITIAL);
     }
     else {
-        if(actual_player == me) 
-        {
-            set_state(data, MOVE);
-            printf(KMAG "\nC'est votre tour.\n\n" KNRM);
-        } 
-        else 
-        {
-            set_state(data, WAITING_MOVE);
-            printf(KMAG "\nC'est le tour de votre adversaire.\n\n" KNRM);
-        }
-
-        printf(KGRN "Votre score: " KNRM "%d\n" KGRN "Score de %s: " KNRM "%d\n", scores[me], players[adv], scores[adv]);
+        set_state(data, current_player == me ? MOVE : WAITING_MOVE);
+        printf(KMAG "\nC'est à " KNRM BGMAG "%s" KNRM KMAG " de jouer.\n\n" KNRM, players[current_player]);
+        printf(KGRN "Score de %s: " KNRM "%d\n" KGRN "Score de %s: " KNRM "%d\n", players[0], scores[0], players[1], scores[1]);
     }
 
     printf("\n");

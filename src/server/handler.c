@@ -68,14 +68,32 @@ Status ask_list(Request request, Data* data, Client* client)
 {
     char texte[BUF_SIZE];
     texte[0] = '\0';
-    for (int i = 0 ; i < data->clients.nb ; ++i) {
+
+    char count[BUF_SIZE];
+    sprintf(count, "%d", data->clients.nb - 1);
+    strcat(texte, count);
+    strcat(texte, "\n");
+
+    for (int i = 0 ; i < data->clients.nb; ++i) {
         Client cli = data->clients.arr[i];
         if (strcmp(cli.name, client->name) != 0)
         {
             strcat(texte, cli.name);
-            strcat(texte, " : ");
+            strcat(texte, "\n");
             strcat(texte, client_status_to_string(cli.status));
             strcat(texte, "\n");
+
+            if(cli.description == NULL || strlen(cli.description) == 0)
+            {
+                strcat(texte, "0\n");
+            }
+            else
+            {
+            printf("desc: %s\n", cli.description);
+                strcat(texte, "1\n");
+                strcat(texte, cli.description);
+                strcat(texte, "\n");
+            }
         }
     }
 

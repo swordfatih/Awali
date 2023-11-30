@@ -27,7 +27,7 @@ void upsert_description_request(Data* data)
 {
     char buffer[BUF_SIZE];
     printf("Entrez votre bio: ");
-    scanf("%s", buffer);
+    scanf("%99[^\n]", buffer);
     printf("\n");
 
     char request[BUF_SIZE];
