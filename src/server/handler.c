@@ -30,6 +30,8 @@ Status handle_request(Request request, Data* data, Client* client)
             return answer_challenge(request, data, client);
         case SEND_MOVE:
             return send_move(request, data, client);
+        case FORFEIT:
+            return declare_forfeit(request, data, client);
         default:
             printf("Unhandled request.\n");
             return ERR_BAD_REQUEST;
@@ -66,14 +68,18 @@ Status ask_list(Request request, Data* data, Client* client)
     texte[0] = '\0';
     for (int i = 0 ; i < data->clients.nb ; ++i) {
         Client cli = data->clients.arr[i];
-        strcat(texte, cli.name);
-        strcat(texte, " : ");
-        strcat(texte, client_status_to_string(cli.status));
-        strcat(texte, "\n");
+        if (strcmp(cli.name, client->name) != 0)
+        {
+            strcat(texte, cli.name);
+            strcat(texte, " : ");
+            strcat(texte, client_status_to_string(cli.status));
+            strcat(texte, "\n");
+        }
     }
 
     char* req = format_request(ASK_LIST, texte);
     write_client(client->sock, req);
+    free(req);
 
     return OK;
 }
@@ -85,7 +91,7 @@ Status send_challenge(Request request, Data* data, Client* client)
     Client* adversaire = NULL;
     for (int i = 0 ; i < data->clients.nb ; i++)
     {
-        if(strcmp(data->clients.arr[i].name, request.body) == 0) 
+        if(strcmp(data->clients.arr[i].name, request.body) == 0 && strcmp(client->name, request.body) != 0) 
         {
             adversaire = &(data->clients.arr[i]);
             break;
@@ -109,6 +115,7 @@ Status send_challenge(Request request, Data* data, Client* client)
 
     char* req = format_request(SEND_CHALLENGE, client->name);
     write_client(adversaire->sock, req);
+    free(req);
 
     return OK;
 }
@@ -121,6 +128,7 @@ Status answer_challenge(Request request, Data* data, Client* client)
     {
         char* req = format_request(ANSWER_CHALLENGE, "vide");
         write_client(client->current_opponent->sock, req);
+        free(req);
         
         client->current_opponent->status = FREE;
         client->current_opponent->current_opponent = NULL;
@@ -177,6 +185,26 @@ Status send_move(Request request, Data* data, Client* client)
 
     send_game(data, client);
     send_game(data, adversaire);
+
+    return OK;
+}
+
+Status declare_forfeit(Request request, Data* data, Client* client){
+    Match* match = &data->matches.arr[client->match_idx];
+    Client *adversaire = client->current_opponent;
+
+    //fin de la partie
+    adversaire->status = FREE;
+    adversaire->current_opponent = NULL;
+
+    client->status = FREE;
+    client->current_opponent = NULL;
+
+    match->gameOver = 1;
+
+    char* req = format_request(FORFEIT, "Vide");
+    write_client(adversaire->sock, req);
+    free(req);
 
     return OK;
 }

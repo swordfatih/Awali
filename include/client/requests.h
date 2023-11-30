@@ -17,5 +17,6 @@ void ask_list_request(Data* data);
 void send_challenge_request(Data* data);
 void answer_challenge_request(Data* data, int answer);
 void send_move_request(Data* data);
+void send_forfait_request(Data* data);
 
 #endif /* guard */

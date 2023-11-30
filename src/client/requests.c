@@ -34,12 +34,14 @@ void upsert_description_request(Data* data)
 
     char* request = format_request(UPSERT_DESCRIPTION, buffer);
     write_server(data->sock, request);
+    free(request);
 }
 
 void ask_list_request(Data* data)
 {
     char* request = format_request(ASK_LIST, "Vide");
     write_server(data->sock, request);
+    free(request);
 }
 
 void send_challenge_request(Data* data)
@@ -51,6 +53,7 @@ void send_challenge_request(Data* data)
 
     char* request = format_request(SEND_CHALLENGE, buffer);
     write_server(data->sock, request);
+    free(request);
     data->state = WAITING;
 }
 
@@ -60,8 +63,9 @@ void answer_challenge_request(Data* data, int answer)
     sprintf(texte, "%d", answer);
     char* request = format_request(ANSWER_CHALLENGE, texte);
     write_server(data->sock, request);
+    free(request);
 
-    data->state = answer == 0 ? INITIAL : WAITING;
+    data->state = (answer == 0) ? INITIAL : WAITING;
 }
 
 void send_move_request(Data* data)
@@ -83,4 +87,13 @@ void send_move_request(Data* data)
 
     char* request = format_request(SEND_MOVE, buff);
     write_server(data->sock, request);
+    free(request);
+}
+
+void send_forfait_request(Data* data){
+    printf("Vous perdez la partie par abandon!\n");
+    char* request = format_request(FORFEIT, "Vide");
+    write_server(data->sock, request);
+    free(request);
+    data->state = INITIAL;
 }

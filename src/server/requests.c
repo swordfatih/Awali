@@ -60,4 +60,5 @@ void send_game(Data* data, Client* client)
 
     char* request = format_request(SEND_GAME, body);
     write_client(client->sock, request);
+    free(request);
 }

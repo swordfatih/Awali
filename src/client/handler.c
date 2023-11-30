@@ -18,6 +18,8 @@ Status handle_request(Request request, Data* data)
             return answer_challenge_handler(request, data);
         case SEND_GAME:
             return send_game_handler(request, data);
+        case FORFEIT:
+            return forfeit_handler(request, data);
         default:
             printf("Unhandled request.\n");
             return ERR_BAD_REQUEST;
@@ -140,6 +142,13 @@ Status send_game_handler(Request request, Data* data)
         printf(" %c", i);
     }
     printf("\n");
+
+    return OK;
+}
+
+Status forfeit_handler(Request request, Data* data){
+    printf("L'adversaire a déclaré forfait, vous gagnez !\n\n");
+    data->state = INITIAL;
 
     return OK;
 }

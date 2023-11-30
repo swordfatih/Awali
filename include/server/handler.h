@@ -39,5 +39,6 @@ Status ask_list(Request request, Data* data, Client* client);
 Status send_challenge(Request request, Data* data, Client* client);
 Status answer_challenge(Request request, Data* data, Client* client);
 Status send_move(Request request, Data* data, Client* client);
+Status declare_forfeit(Request request, Data* data, Client* client);
 
 #endif /* guard */

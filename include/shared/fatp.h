@@ -59,7 +59,8 @@ typedef enum {
     ANSWER_CHALLENGE,
     SEND_GAME,
     SEND_MOVE,
-    STATUS
+    STATUS,
+    FORFEIT
 } RequestType;
 
 /**

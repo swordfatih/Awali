@@ -43,10 +43,11 @@ void app(const char *address, const char *name)
     Data data = { state, sock };
     strcpy(data.name, name);
 
-    menu(data.state);
-
     while (ex != -1)
     {
+        menu(data.state);
+        //affichee le menu ici l'affiche parfois 2 fois. Avant il ne s'afficher pas quand on refuser une partie...
+
         FD_ZERO(&rdfs);
 
         /* add STDIN_FILENO */
@@ -65,7 +66,6 @@ void app(const char *address, const char *name)
         if (FD_ISSET(fileno(stdin), &rdfs))
         {
             fgets(buffer, BUF_SIZE - 1, stdin);
-
             {
                 char *p = NULL;
                 p = strstr(buffer, "\n");
@@ -104,13 +104,11 @@ void app(const char *address, const char *name)
                 if(status != OK)
                 {
                 handle_error(status, type, &data);
-                menu(data.state);
                 }
             }
             else
             {
                 handle_request(request, &data);
-                menu(data.state);
             }
       }
    }
@@ -172,11 +170,11 @@ int read_server(SOCKET sock, char *buffer)
 
 void write_server(SOCKET sock, const char *buffer)
 {
-   if (send(sock, buffer, strlen(buffer), 0) < 0)
-   {
-      perror("send()");
-      exit(errno);
-   }
+    if (send(sock, buffer, strlen(buffer), 0) < 0)
+    {
+        perror("send()");
+        exit(errno);
+    }
 }
 
 int main(int argc, char **argv)

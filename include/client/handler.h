@@ -26,5 +26,6 @@ Status ask_list_handler(Request request, Data* data);
 Status send_challenge_handler(Request request, Data* data);
 Status answer_challenge_handler(Request request, Data* data);
 Status send_game_handler(Request request, Data* data);
+Status forfeit_handler(Request request, Data* data);
 
 #endif /* guard */
