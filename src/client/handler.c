@@ -162,12 +162,7 @@ Status send_game_handler(Request request, Data* data)
         }
     }
 
-    if (game_over == 1)
-    {
-        printf(KGRN "%s a gagné avec un score de %d contre %d.\nFélicitations !\n" KNRM, players[opponent], scores[opponent], scores[player]);
-        set_state(data, INITIAL);
-    }
-    else
+    if (game_over != 1)
     {
         if (me != -1)
         {
@@ -178,7 +173,7 @@ Status send_game_handler(Request request, Data* data)
             set_state(data, SPECTATOR);
         }
 
-        printf(KMAG "\nC'est à " KNRM BGMAG "%s" KNRM KMAG " de jouer.\n\n" KNRM, players[player]);
+        printf(KMAG "\nC'est à " KNRM BGMAG "%s" KNRM KMAG " de jouer.\n\n" KNRM, me == player ? "vous" : players[player]);
         printf(KGRN "Score de %s: " KNRM "%d\n" KGRN "Score de %s: " KNRM "%d\n", players[0], scores[0], players[1], scores[1]);
     }
 
@@ -240,6 +235,20 @@ Status send_game_handler(Request request, Data* data)
             printf(" %c ", i);
         }
         printf(KGRA "│\n└───┴───┴───┴───┴───┴───┘\n" KNRM);
+    }
+
+    if (game_over == 1)
+    {
+        if(me != player) 
+        {
+            printf(KGRN KBLD "%s" KNRM KGRN " a gagné avec un score de " KNRM KGRN KBLD "%d" KNRM KGRN " contre " KNRM KGRN KBLD "%d" KNRM KGRN ".\nFélicitations !\n" KNRM, players[opponent], scores[opponent], scores[player]);
+        }
+        else
+        {
+            printf(KRED KBLD "Vous" KNRM KRED " avez perdu avec un score de " KNRM KRED KBLD "%d" KNRM KRED " contre " KNRM KRED KBLD "%d" KNRM KRED ".\nNe baissez pas les bras !\n" KNRM, scores[player], scores[opponent]);   
+        }
+
+        set_state(data, INITIAL);
     }
 
     return OK;

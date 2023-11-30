@@ -98,7 +98,7 @@ int testFamine(Game g, int actualPlayer)
  */
 int isWin(Game* g, int actualPlayer)
 {
-    if (g->score1 > 1 || g->score2 > 1)
+    if (g->score1 >= 25 || g->score2 >= 25)
     {
         return 1;
     }

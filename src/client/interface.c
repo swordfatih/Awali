@@ -39,6 +39,7 @@ void menu(State state)
         printf("1. Envoyer un message aux spectateurs.\n");
         printf("2. Observer une autre partie en même temps.\n");
         printf("3. Arrêter d'observer toutes les parties.\n");
+        break;
     default:
         return;
     }

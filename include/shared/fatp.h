@@ -9,54 +9,56 @@
 
 #ifdef __linux__
 
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h>
 #include <arpa/inet.h>
-#include <sys/select.h>
-#include <unistd.h> /* close */
 #include <netdb.h> /* gethostbyname */
+#include <netinet/in.h>
+#include <sys/select.h>
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <unistd.h> /* close */
 
 #define INVALID_SOCKET -1
 #define SOCKET_ERROR -1
 #define closesocket(s) close(s)
 
-typedef int SOCKET;
+typedef int                SOCKET;
 typedef struct sockaddr_in SOCKADDR_IN;
-typedef struct sockaddr SOCKADDR;
-typedef struct in_addr IN_ADDR;
+typedef struct sockaddr    SOCKADDR;
+typedef struct in_addr     IN_ADDR;
 
 #endif
 
-#define CRLF        "\r\n"
-#define PORT         1977
-#define MAX_CLIENTS  100
-#define MAX_MATCHES  100
-#define BUF_SIZE     1024
+#define CRLF "\r\n"
+#define PORT 1977
+#define MAX_CLIENTS 100
+#define MAX_MATCHES 100
+#define BUF_SIZE 1024
 #define BODY_SIZE 512
 #define SEPARATOR "$"
 
 // colors
-#define KNRM  "\x1B[0m"
-#define KRED  "\x1B[31m"
-#define KGRN  "\x1B[32m"
-#define KYEL  "\x1B[33m"
-#define KBLU  "\x1B[34m"
-#define KMAG  "\x1B[35m"
-#define KCYN  "\x1B[36m"
-#define KWHT  "\x1B[37m"
-#define KGRA  "\x1b[90m"
+#define KNRM "\x1B[0m"
+#define KRED "\x1B[31m"
+#define KGRN "\x1B[32m"
+#define KYEL "\x1B[33m"
+#define KBLU "\x1B[34m"
+#define KMAG "\x1B[35m"
+#define KCYN "\x1B[36m"
+#define KWHT "\x1B[37m"
+#define KGRA "\x1b[90m"
 
 // bold colors
-#define BBLU  "\033[1;94m"
+#define BBLU "\033[1;94m"
+#define KBLD "\x1b[1m"
 
 // background
 #define BGMAG "\x1b[45m"
 
 /**
  * Type of a request
-*/
-typedef enum {
+ */
+typedef enum
+{
     UPSERT_DESCRIPTION = 0,
     ASK_LIST,
     SEND_CHALLENGE,
@@ -72,18 +74,19 @@ typedef enum {
 
 /**
  * Header of a request
-*/
+ */
 typedef struct
 {
-    int id;
+    int         id;
     RequestType type;
-    char body[BODY_SIZE];
+    char        body[BODY_SIZE];
 } Request;
 
 /**
  * Status of a response
-*/
-typedef enum {
+ */
+typedef enum
+{
     OK = 0,
     ERR_NOT_FOUND,
     ERR_BAD_REQUEST,

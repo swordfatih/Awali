@@ -205,6 +205,16 @@ Status send_move(Request request, Data* data, Client* client)
         client->status = FREE;
         client->current_opponent = NULL;
 
+        for(int i = 0; i < match->spectators.nb; ++i)
+        {
+            Client* spectator = match->spectators.arr[i];
+            
+            if(spectator != NULL)
+            {
+                spectator->status = FREE;
+            }
+        }
+
         match->gameOver = 1;
     }
 
