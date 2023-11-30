@@ -5,7 +5,7 @@
 #include "requests.h"
 #include "server.h"
 
-char* format_request(RequestType type, char* body)
+void format_request(RequestType type, char* body, char* request)
 {
     static int request_id = 0;
 
@@ -15,15 +15,12 @@ char* format_request(RequestType type, char* body)
     char type_str[BUF_SIZE];
     sprintf(type_str, "%d", type);
 
-    char* request = (char*) malloc(BUF_SIZE);
     strcpy(request, id);
     strcat(request, SEPARATOR);
     strcat(request, type_str);
     strcat(request, SEPARATOR);
     strcat(request, body);
     strcat(request, SEPARATOR);
-
-    return request;
 }
 /**
  * Envoie le plateau de jeu : 
@@ -64,7 +61,7 @@ void send_game(Data* data, Client* client)
         strcat(body, "\n");
     }
 
-    char* request = format_request(SEND_GAME, body);
+    char request[BUF_SIZE];
+    format_request(SEND_GAME, body, request);
     write_client(client->sock, request);
-    free(request);
 }

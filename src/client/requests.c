@@ -3,8 +3,9 @@
 #include <stdio.h>
 
 #include "requests.h"
+#include "interface.h"
 
-char* format_request(RequestType type, char* body)
+void format_request(RequestType type, char* body, char* request)
 {
     static int request_id = 0;
 
@@ -14,15 +15,12 @@ char* format_request(RequestType type, char* body)
     char type_str[BUF_SIZE];
     sprintf(type_str, "%d", type);
 
-    char* request = (char*) malloc(BUF_SIZE);
     strcpy(request, id);
     strcat(request, SEPARATOR);
     strcat(request, type_str);
     strcat(request, SEPARATOR);
     strcat(request, body);
     strcat(request, SEPARATOR);
-
-    return request;
 }
 
 void upsert_description_request(Data* data)
@@ -32,16 +30,16 @@ void upsert_description_request(Data* data)
     scanf("%s", buffer);
     printf("\n");
 
-    char* request = format_request(UPSERT_DESCRIPTION, buffer);
+    char request[BUF_SIZE];
+    format_request(UPSERT_DESCRIPTION, buffer, request);
     write_server(data->sock, request);
-    free(request);
 }
 
 void ask_list_request(Data* data)
 {
-    char* request = format_request(ASK_LIST, "Vide");
+    char request[BUF_SIZE];
+    format_request(ASK_LIST, "Vide", request);
     write_server(data->sock, request);
-    free(request);
 }
 
 void send_challenge_request(Data* data)
@@ -49,23 +47,22 @@ void send_challenge_request(Data* data)
     char buffer[BUF_SIZE];
     printf("Entrez le nom de l'adversaire: ");
     scanf("%s", buffer);
-    printf("\n");
 
-    char* request = format_request(SEND_CHALLENGE, buffer);
+    char request[BUF_SIZE];
+    format_request(SEND_CHALLENGE, buffer, request);
     write_server(data->sock, request);
-    free(request);
-    data->state = WAITING;
+    set_state(data, WAITING);
 }
 
 void answer_challenge_request(Data* data, int answer) 
 {
     char texte[BUF_SIZE];
     sprintf(texte, "%d", answer);
-    char* request = format_request(ANSWER_CHALLENGE, texte);
+    char request[BUF_SIZE];
+    format_request(ANSWER_CHALLENGE, texte, request);
     write_server(data->sock, request);
-    free(request);
 
-    data->state = (answer == 0) ? INITIAL : WAITING;
+    set_state(data, (answer == 0) ? INITIAL : WAITING);
 }
 
 void send_move_request(Data* data)
@@ -85,15 +82,27 @@ void send_move_request(Data* data)
         }
     } while (valid == 0);
 
-    char* request = format_request(SEND_MOVE, buff);
+    char request[BUF_SIZE];
+    format_request(SEND_MOVE, buff, request);
     write_server(data->sock, request);
-    free(request);
 }
 
-void send_forfait_request(Data* data){
+void send_forfait_request(Data* data)
+{
     printf("Vous perdez la partie par abandon!\n");
-    char* request = format_request(FORFEIT, "Vide");
+    char request[BUF_SIZE];
+    format_request(FORFEIT, "Vide", request);
     write_server(data->sock, request);
-    free(request);
-    data->state = INITIAL;
+    set_state(data, INITIAL);
+}
+
+void send_chat_request(Data* data)
+{
+    char buffer[BUF_SIZE];
+    printf("Entrez votre message: ");
+    scanf("%99[^\n]", buffer);
+
+    char request[BUF_SIZE];
+    format_request(SEND_CHAT, buffer, request);
+    write_server(data->sock, request);
 }

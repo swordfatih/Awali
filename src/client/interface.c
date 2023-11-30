@@ -7,32 +7,44 @@ void menu(State state)
 {
     switch(state)
     {
-            case INITIAL:
-                printf(BBLU "\n\n[Actions possibles]\n" KCYN);
-                printf("1. Mettre à jour votre description.\n");
-                printf("2. Voir tous les joueurs.\n");
-                printf("3. Defier un joueur.\n");
-                printf("4. Sortir\n");
-                break;      
-            case CHALLENGE:
-                printf(BBLU "\n\n[Actions possibles]\n" KCYN);
-                printf("1. Accepter.\n");
-                printf("2. Refuser.\n");
-                break;
-            case WAITING:
-                printf(BBLU "En attente du serveur...\n" KCYN);
-                break;
-            case MOVE:
-                printf(BBLU "\n\n[Actions possibles]\n" KCYN);
-                printf("1. Jouer.\n");
-                printf("2. Quitter la partie.\n");
-                break;
-            default:
-                return;
+        case INITIAL:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
+            printf("1. Mettre à jour votre description.\n");
+            printf("2. Voir tous les joueurs.\n");
+            printf("3. Defier un joueur.\n");
+            printf("4. Sortir\n");
+            break;      
+        case CHALLENGE:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
+            printf("1. Accepter.\n");
+            printf("2. Refuser.\n");
+            break;
+        case WAITING:
+            printf(BBLU "En attente du serveur...\n" KCYN);
+            break;
+        case WAITING_MOVE:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
+            printf("1. Envoyer un message.\n");
+            printf("2. Abandonner la partie.\n");
+            break;
+        case MOVE:
+            printf(BBLU "\n\n[Actions possibles]\n" KCYN);
+            printf("1. Jouer un coup.\n");
+            printf("2. Envoyer un message.\n");
+            printf("3. Abandonner la partie.\n");
+            break;
+        default:
+            return;
     }
 
     printf("\n" KNRM);
     fflush(stdout);
+}
+
+void set_state(Data* data, State value) 
+{
+    data->state = value;
+    menu(value);
 }
 
 int handle_choices(Data* data, int choice)
@@ -43,6 +55,8 @@ int handle_choices(Data* data, int choice)
             return initial_choices(data, choice);
         case CHALLENGE:
             return challenge_choices(data, choice);
+        case WAITING_MOVE:
+            return waiting_move_choices(data, choice);
         case MOVE:
             return move_choices(data, choice);
         default:
@@ -100,14 +114,33 @@ int challenge_choices(Data* data, int choice)
     return 0;
 }
 
+int waiting_move_choices(Data* data, int choice)
+{
+    switch(choice) 
+    {
+        case 1: // envoyer un message
+            send_chat_request(data);
+            break;
+        case 2: // quitter la partie
+            send_forfait_request(data);
+            break;
+        default:
+            break;
+    }
+    return 0;
+}
+
 int move_choices(Data* data, int choice)
 {
     switch(choice) 
     {
-        case 1: //jouer le coup
+        case 1: // jouer un coup
             send_move_request(data);
             break;
-        case 2: // quitter la partie
+        case 2: // envoyer un message
+            send_chat_request(data);
+            break;
+        case 3: // quitter la partie
             send_forfait_request(data);
             break;
         default:

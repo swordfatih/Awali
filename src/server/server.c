@@ -48,7 +48,7 @@ void app(void)
 
     while(1)
     {
-        printf("actual number of clients : %d\n", data.clients.nb);
+        printf("current number of clients : %d\n", data.clients.nb);
         FD_ZERO(&rdfs);
 
         /* add STDIN_FILENO */
@@ -111,39 +111,40 @@ void app(void)
                 /* a client is talking */
                 if(FD_ISSET(data.clients.arr[i].sock, &rdfs))
                 {
-                int c = read_client(data.clients.arr[i].sock, buffer);
-                /* client disconnected */
-                if(c == 0)
-                {
-                    closesocket(data.clients.arr[i].sock);
-                    data.clients.arr[i].status = OFFLINE;
-                    remove_client(data.clients.arr, i, &(data.clients.nb));
-                    strncpy(buffer, data.clients.arr[i].name, BUF_SIZE - 1);
-                    strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                    // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
-                }
-                else
-                {
-                    Request request = parse_request(buffer);
-                    Status status = handle_request(request, &data, &data.clients.arr[i]);
-
-                    if(status != OK) 
+                    int c = read_client(data.clients.arr[i].sock, buffer);
+                    /* client disconnected */
+                    if(c == 0)
                     {
-                        printf("Request of type %d and id %d failed\n", request.type, request.id);
+                        closesocket(data.clients.arr[i].sock);
+                        data.clients.arr[i].status = OFFLINE;
+                        remove_client(data.clients.arr, i, &(data.clients.nb));
+                        strncpy(buffer, data.clients.arr[i].name, BUF_SIZE - 1);
+                        strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
+                        // send_message_to_all_clients(data.clients, client, actual, buffer, 1);
+                    }
+                    else
+                    {
+                        Request request = parse_request(buffer);
+                        Status status = handle_request(request, &data, &data.clients.arr[i]);
+
+                        if(status != OK) 
+                        {
+                            printf("Request of type %d and id %d failed\n", request.type, request.id);
+                        }
+
+                        char body[BUF_SIZE], type_body[BUF_SIZE];
+                        sprintf(body, "%d", status);
+                        sprintf(type_body, "%d", request.type);
+                        strcat(body, "\n");
+                        strcat(body, type_body);
+                        strcat(body, "\n");
+
+                        char response[BUF_SIZE];
+                        format_request(STATUS, body, response);
+                        write_client(data.clients.arr[i].sock, response);
                     }
 
-                    char body[BUF_SIZE], type_body[BUF_SIZE];
-                    sprintf(body, "%d", status);
-                    sprintf(type_body, "%d", request.type);
-                    strcat(body, "\n");
-                    strcat(body, type_body);
-                    strcat(body, "\n");
-
-                    char* response = format_request(STATUS, body);
-                    write_client(data.clients.arr[i].sock, response);
-                }
-
-                break;
+                    break;
                 }
             }
         }

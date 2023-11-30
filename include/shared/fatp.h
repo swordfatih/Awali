@@ -45,6 +45,7 @@ typedef struct in_addr IN_ADDR;
 #define KMAG  "\x1B[35m"
 #define KCYN  "\x1B[36m"
 #define KWHT  "\x1B[37m"
+#define KGRA  "\x1b[90m"
 
 // bold colors
 #define BBLU  "\033[1;94m"
@@ -60,7 +61,8 @@ typedef enum {
     SEND_GAME,
     SEND_MOVE,
     STATUS,
-    FORFEIT
+    FORFEIT,
+    SEND_CHAT
 } RequestType;
 
 /**

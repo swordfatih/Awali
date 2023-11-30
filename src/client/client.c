@@ -39,15 +39,13 @@ void app(const char *address, const char *name)
     /* send our name */
     write_server(sock, name);
 
-    State state = INITIAL;
-    Data data = { state, sock };
+    Data data;
+    data.sock = sock;
+    set_state(&data, INITIAL);
     strcpy(data.name, name);
 
     while (ex != -1)
     {
-        menu(data.state);
-        //affichee le menu ici l'affiche parfois 2 fois. Avant il ne s'afficher pas quand on refuser une partie...
-
         FD_ZERO(&rdfs);
 
         /* add STDIN_FILENO */
@@ -66,17 +64,19 @@ void app(const char *address, const char *name)
         if (FD_ISSET(fileno(stdin), &rdfs))
         {
             fgets(buffer, BUF_SIZE - 1, stdin);
+
             {
                 char *p = NULL;
                 p = strstr(buffer, "\n");
+
                 if (p != NULL)
                 {
-                *p = 0;
+                    *p = 0;
                 }
                 else
                 {
-                /* fclean */
-                buffer[BUF_SIZE - 1] = 0;
+                    /* fclean */
+                    buffer[BUF_SIZE - 1] = 0;
                 }
             }
 
@@ -103,14 +103,15 @@ void app(const char *address, const char *name)
 
                 if(status != OK)
                 {
-                handle_error(status, type, &data);
+                    handle_error(status, type, &data);
                 }
             }
             else
             {
                 handle_request(request, &data);
+                printf("\n");
             }
-      }
+        }
    }
 
    end_connection(sock);
@@ -118,34 +119,34 @@ void app(const char *address, const char *name)
 
 int init_connection(const char *address)
 {
-   SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
-   SOCKADDR_IN sin = {0};
-   struct hostent *hostinfo;
+    SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+    SOCKADDR_IN sin = {0};
+    struct hostent *hostinfo;
 
-   if (sock == INVALID_SOCKET)
-   {
-      perror("socket()");
-      exit(errno);
-   }
+    if (sock == INVALID_SOCKET)
+    {
+        perror("socket()");
+        exit(errno);
+    }
 
-   hostinfo = gethostbyname(address);
-   if (hostinfo == NULL)
-   {
-      fprintf(stderr, "Unknown host %s.\n", address);
-      exit(EXIT_FAILURE);
-   }
+    hostinfo = gethostbyname(address);
+    if (hostinfo == NULL)
+    {
+        fprintf(stderr, "Unknown host %s.\n", address);
+        exit(EXIT_FAILURE);
+    }
 
-   sin.sin_addr = *(IN_ADDR *)hostinfo->h_addr_list[0];
-   sin.sin_port = htons(PORT);
-   sin.sin_family = AF_INET;
+    sin.sin_addr = *(IN_ADDR *)hostinfo->h_addr_list[0];
+    sin.sin_port = htons(PORT);
+    sin.sin_family = AF_INET;
 
-   if (connect(sock, (SOCKADDR *)&sin, sizeof(SOCKADDR)) == SOCKET_ERROR)
-   {
-      perror("connect()");
-      exit(errno);
-   }
+    if (connect(sock, (SOCKADDR *)&sin, sizeof(SOCKADDR)) == SOCKET_ERROR)
+    {
+        perror("connect()");
+        exit(errno);
+    }
 
-   return sock;
+    return sock;
 }
 
 void end_connection(int sock)

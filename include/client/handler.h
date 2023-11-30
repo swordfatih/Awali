@@ -8,6 +8,7 @@ typedef enum
     INITIAL,
     CHALLENGE,
     WAITING,
+    WAITING_MOVE,
     MOVE
 } State;
 
@@ -27,5 +28,6 @@ Status send_challenge_handler(Request request, Data* data);
 Status answer_challenge_handler(Request request, Data* data);
 Status send_game_handler(Request request, Data* data);
 Status forfeit_handler(Request request, Data* data);
+Status send_chat_handler(Request request, Data* data);
 
 #endif /* guard */

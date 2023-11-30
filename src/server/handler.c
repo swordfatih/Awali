@@ -32,6 +32,8 @@ Status handle_request(Request request, Data* data, Client* client)
             return send_move(request, data, client);
         case FORFEIT:
             return declare_forfeit(request, data, client);
+        case SEND_CHAT:
+            return send_chat(request, data, client);
         default:
             printf("Unhandled request.\n");
             return ERR_BAD_REQUEST;
@@ -77,9 +79,9 @@ Status ask_list(Request request, Data* data, Client* client)
         }
     }
 
-    char* req = format_request(ASK_LIST, texte);
+    char req[BUF_SIZE];
+    format_request(ASK_LIST, texte, req);
     write_client(client->sock, req);
-    free(req);
 
     return OK;
 }
@@ -113,9 +115,9 @@ Status send_challenge(Request request, Data* data, Client* client)
 
     adversaire->status = BUSY;
 
-    char* req = format_request(SEND_CHALLENGE, client->name);
+    char req[BUF_SIZE];
+    format_request(SEND_CHALLENGE, client->name, req);
     write_client(adversaire->sock, req);
-    free(req);
 
     return OK;
 }
@@ -126,9 +128,9 @@ Status answer_challenge(Request request, Data* data, Client* client)
 
     if(answer == 0) 
     {
-        char* req = format_request(ANSWER_CHALLENGE, "vide");
+        char req[BUF_SIZE];
+        format_request(ANSWER_CHALLENGE, "vide", req);
         write_client(client->current_opponent->sock, req);
-        free(req);
         
         client->current_opponent->status = FREE;
         client->current_opponent->current_opponent = NULL;
@@ -191,7 +193,7 @@ Status send_move(Request request, Data* data, Client* client)
 
 Status declare_forfeit(Request request, Data* data, Client* client){
     Match* match = &data->matches.arr[client->match_idx];
-    Client *adversaire = client->current_opponent;
+    Client* adversaire = client->current_opponent;
 
     //fin de la partie
     adversaire->status = FREE;
@@ -202,9 +204,27 @@ Status declare_forfeit(Request request, Data* data, Client* client){
 
     match->gameOver = 1;
 
-    char* req = format_request(FORFEIT, "Vide");
+    char req[BUF_SIZE];
+    format_request(FORFEIT, "Vide", req);
     write_client(adversaire->sock, req);
-    free(req);
+
+    return OK;
+}
+
+Status send_chat(Request request, Data* data, Client* client)
+{
+    printf("message: %s\n", request.body);
+    Client* adversaire = client->current_opponent;
+
+    char body[BUF_SIZE];
+    strcpy(body, client->name);
+    strcat(body, "\n");
+    strcat(body, request.body);
+    strcat(body, "\n");
+
+    char req[BUF_SIZE];
+    format_request(SEND_CHAT, body, req);
+    write_client(adversaire->sock, req);
 
     return OK;
 }

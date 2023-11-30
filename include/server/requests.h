@@ -7,7 +7,7 @@
 /**
  * Format requests with a type and a body
 */
-char* format_request(RequestType type, char* body);
+void format_request(RequestType type, char* body, char* request);
 
 void send_game(Data* data, Client* client);
 
