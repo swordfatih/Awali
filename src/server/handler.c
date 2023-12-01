@@ -90,7 +90,7 @@ Status ask_list(Request request, Data* data, Client* client)
             strcat(texte, client_status_to_string(cli.status));
             strcat(texte, "\n");
 
-            if (cli.description == NULL || strlen(cli.description) == 0)
+            if (strlen(cli.description) == 0)
             {
                 strcat(texte, "0\n");
             }
