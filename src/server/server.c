@@ -94,17 +94,38 @@ void app(void)
                 continue;
             }
 
-            /* what is the new maximum fd ? */
-            max = csock > max ? csock : max;
+            int twice = 0;
+            for (i = 0 ; i < data.clients.nb ; i++){
+                if (strcmp(buffer, data.clients.arr[i].name) == 0){
+                    twice = 1;
+                    break;
+                }
+            }
 
-            FD_SET(csock, &rdfs);
+            if (twice == 0) //C'est OK
+            {
+                write_client(csock, "1");
 
-            data.clients.arr[data.clients.nb].sock = csock;
-            strncpy(data.clients.arr[data.clients.nb].name, buffer, BUF_SIZE - 1);
-            data.clients.arr[data.clients.nb].status = FREE;
-            data.clients.nb++;
+                /* what is the new maximum fd ? */
+                max = csock > max ? csock : max;
 
-            printf(KGRN "%s joined.\n" KNRM, buffer);
+                FD_SET(csock, &rdfs);
+
+                data.clients.arr[data.clients.nb].sock = csock;
+                strncpy(data.clients.arr[data.clients.nb].name, buffer, BUF_SIZE - 1);
+                data.clients.arr[data.clients.nb].status = FREE;
+                data.clients.nb++;
+
+                printf(KGRN "%s joined.\n" KNRM, buffer);
+                
+            } 
+            else // le nom existe deja
+            {
+                printf("Le joueur est existant\n");
+                write_client(csock, "0");
+                closesocket(csock);
+            }
+            
         }
         else
         {
