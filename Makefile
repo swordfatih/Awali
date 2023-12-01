@@ -1,4 +1,4 @@
-OBJECTS := client server game
+OBJECTS := client server
 OUTPUT := awali
 C := gcc
 CFLAGS := -std=c11 -Wall

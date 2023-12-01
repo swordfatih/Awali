@@ -3,8 +3,8 @@
 
 typedef struct
 {
-    int   cases[12];
-    char* moves;
+    int  cases[12];
+    char moves[1024];
 } Board;
 
 typedef struct

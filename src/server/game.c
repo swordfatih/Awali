@@ -14,7 +14,6 @@ Game initGame()
     {
         g.board.cases[i] = 4;
     }
-    g.board.moves = malloc(1024);
     g.board.moves[0] = '\0';
     g.score1 = 0;
     g.score2 = 0;
@@ -119,7 +118,6 @@ int isWin(Game* g, int actualPlayer)
         }
         return 2;
     }
-    // tester plus moyen de manger
 
     return 0;
 }

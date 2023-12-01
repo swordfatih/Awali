@@ -3,8 +3,7 @@ Multiplayer Awali implementation in C
 
 # Organisation des fichiers
 Les fichiers sont séparé en sources (.c) et en includes (.h)
-Le jeu contient 3 applications : 
-    - game : le jeu de awale sur un terminal a deux joueurs locaux.
+Le jeu contient 2 applications : 
     - server : le serveur de jeu de awale
     - client : l'application d'awale en ligne qui va se connecter au server
 
@@ -17,7 +16,6 @@ Se placer dans le répartoire Awali
 Differentes options du make :
     - make : créé les executables pour les 3 applications
     - make clean : supprime tous les executables
-    - make game : contruit uniquement l'application awale local
     - make server : contruit uniquement l'application server
     - make client : contruit uniquement l'application client
     - make debug : contruit toutes les applications avec les options de debuggages
