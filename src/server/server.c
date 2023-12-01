@@ -163,9 +163,10 @@ void clear_clients(Clients clients)
 
 void remove_client(Data* data, Client* clients, int to_remove, int* actual)
 {
+    printf(KRED "%s disconnected.\n" KNRM, clients[to_remove].name);
+
     if(clients[to_remove].current_opponent != NULL)
     {
-        printf(KRED "%s disconnected.\n" KNRM, clients[to_remove].name);
         Request request = {};
         declare_forfeit(request, data, &clients[to_remove]);
     }

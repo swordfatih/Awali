@@ -48,6 +48,14 @@ void send_challenge_request(Data* data)
     printf("Entrez le nom du joueur à défier: ");
     scanf("%s", buffer);
 
+    char public[BUF_SIZE];
+    printf("\nVoulez-vous que la partie soit publique (Y/N) ?: ");
+    scanf("%s", public);
+
+    strcat(buffer, "\n");
+    strcat(buffer, public);
+    strcat(buffer, "\n");
+
     char request[BUF_SIZE];
     format_request(SEND_CHALLENGE, buffer, request);
     write_server(data->sock, request);

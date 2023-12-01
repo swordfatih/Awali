@@ -94,6 +94,7 @@ typedef enum
     ERR_ALREADY_CONNECTED,
     ERR_BUSY,
     ERR_FREE,
+    ERR_PRIVATE,
 } Status;
 
 #endif /* guard */

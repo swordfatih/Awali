@@ -111,12 +111,15 @@ Status ask_list(Request request, Data* data, Client* client)
 
 Status send_challenge(Request request, Data* data, Client* client)
 {
+    char* name = strtok(request.body, "\n");
+    char* public = strtok(NULL, "\n");
+
     client->status = BUSY;
 
     Client* adversaire = NULL;
     for (int i = 0; i < data->clients.nb; i++)
     {
-        if (strcmp(data->clients.arr[i].name, request.body) == 0 && strcmp(client->name, request.body) != 0)
+        if (strcmp(data->clients.arr[i].name, name) == 0 && strcmp(client->name, name) != 0)
         {
             adversaire = &(data->clients.arr[i]);
             break;
@@ -136,12 +139,19 @@ Status send_challenge(Request request, Data* data, Client* client)
     }
 
     client->current_opponent = adversaire;
+    client->public_preference = public[0] == 'Y';
     adversaire->current_opponent = client;
 
     adversaire->status = BUSY;
 
+    char buffer[BUF_SIZE];
+    strcpy(buffer, client->name);
+    strcat(buffer, "\n");
+    strcat(buffer, public);
+    strcat(buffer, "\n");
+
     char req[BUF_SIZE];
-    format_request(SEND_CHALLENGE, client->name, req);
+    format_request(SEND_CHALLENGE, buffer, req);
     write_client(adversaire->sock, req);
 
     return OK;
@@ -171,6 +181,7 @@ Status answer_challenge(Request request, Data* data, Client* client)
         match.game_over = 0;
         match.current_player = rand() % 2;
         match.game = initGame();
+        match.public = client->current_opponent->public_preference;
 
         client->match_idx = data->matches.nb;
         client->current_opponent->match_idx = data->matches.nb;
@@ -340,6 +351,12 @@ Status start_spectate(Request request, Data* data, Client* client)
     }
 
     Match*      match = &data->matches.arr[player->match_idx];
+
+    if(match->public != 1)
+    {
+        client->status = FREE;
+        return ERR_PRIVATE;
+    }
 
     Spectators* spectators = &match->spectators;
     spectators->arr[spectators->nb++] = client;

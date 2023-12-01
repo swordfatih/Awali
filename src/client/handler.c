@@ -62,6 +62,11 @@ void handle_error(Status status, RequestType request, Data* data)
         printf(KRED "[ERREUR] Ce joueur n'est pas dans une partie.\n\n" KNRM);
         set_state(data, INITIAL);
     }
+    else if (status == ERR_PRIVATE)
+    {
+        printf(KRED "[ERREUR] Cette partie est privée.\n\n" KNRM);
+        set_state(data, INITIAL);
+    }
 }
 
 Request parse_request(char* buffer)
@@ -117,7 +122,10 @@ Status ask_list_handler(Request request, Data* data)
 
 Status send_challenge_handler(Request request, Data* data)
 {
-    printf("Vous avez reçu un challenge de: %s\n", request.body);
+    char* name = strtok(request.body, "\n");
+    int public = strtok(NULL, "\n")[0] == 'Y';
+
+    printf("Vous avez reçu un challenge (%s) de: %s\n", public == 1 ? "publique" : "privée", name);
     set_state(data, CHALLENGE);
 
     return OK;
@@ -154,7 +162,7 @@ Status send_game_handler(Request request, Data* data)
 
     int me = -1;
 
-    for (int i = 0; i < 2; ++i)10
+    for (int i = 0; i < 2; ++i)
     {
         if (strcmp(players[i], data->name) == 0)
         {
