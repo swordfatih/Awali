@@ -382,7 +382,6 @@ Status stop_spectate(Request request, Data* data, Client* client)
                 if (spectator != NULL && strcmp(spectator->name, client->name) == 0)
                 {
                     match->spectators.arr[i] = NULL;
-                    return OK;
                 }
             }
         }
