@@ -2,7 +2,7 @@
 #define HANDLER_H
 
 #include "client.h"
-#include "fatp.h"
+#include "fatpp.h"
 #include "game.h"
 
 typedef struct

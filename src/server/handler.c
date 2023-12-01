@@ -5,7 +5,7 @@
 #include <time.h>
 
 #include "client.h"
-#include "fatp.h"
+#include "fatpp.h"
 #include "game.h"
 #include "handler.h"
 #include "requests.h"

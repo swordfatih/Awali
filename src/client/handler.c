@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "fatp.h"
+#include "fatpp.h"
 #include "handler.h"
 #include "interface.h"
 
@@ -154,7 +154,7 @@ Status send_game_handler(Request request, Data* data)
 
     int me = -1;
 
-    for (int i = 0; i < 2; ++i)
+    for (int i = 0; i < 2; ++i)10
     {
         if (strcmp(players[i], data->name) == 0)
         {

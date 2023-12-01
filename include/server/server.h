@@ -1,7 +1,7 @@
 #ifndef SERVER_H
 #define SERVER_H
 
-#include "fatp.h"
+#include "fatpp.h"
 #include "handler.h"
 
 void init(void);

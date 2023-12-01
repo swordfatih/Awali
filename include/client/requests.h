@@ -2,7 +2,7 @@
 #define REQUESTS_H
 
 #include "client.h"
-#include "fatp.h"
+#include "fatpp.h"
 
 /**
  * Format requests with a type and a body
