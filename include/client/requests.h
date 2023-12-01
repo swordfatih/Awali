@@ -21,5 +21,6 @@ void send_forfait_request(Data* data);
 void send_chat_request(Data* data);
 void start_spectate_request(Data* data);
 void stop_spectate_request(Data* data);
+void send_message_request(Data* data);
 
 #endif /* guard */

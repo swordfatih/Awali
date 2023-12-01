@@ -38,6 +38,8 @@ Status handle_request(Request request, Data* data, Client* client)
         return start_spectate(request, data, client);
     case STOP_SPECTATE:
         return stop_spectate(request, data, client);
+    case SEND_MESSAGE:
+        return send_message(request, data, client);
     default:
         printf("Unhandled request.\n");
         return ERR_BAD_REQUEST;
@@ -243,8 +245,6 @@ Status declare_forfeit(Request request, Data* data, Client* client)
     Match*  match = &data->matches.arr[client->match_idx];
     Client* adversaire = client->current_opponent;
 
-    printf("moi: %s\nadversaire:%s\n", client->name, adversaire->name);
-
     // fin de la partie
     adversaire->status = FREE;
     adversaire->current_opponent = NULL;
@@ -254,18 +254,14 @@ Status declare_forfeit(Request request, Data* data, Client* client)
 
     match->game_over = 1;
 
-    printf("before\n");
-
     char req[BUF_SIZE];
     format_request(FORFEIT, adversaire->name, req);
     write_client(adversaire->sock, req);
 
-    printf("after\n");
     for (int i = 0; i < match->spectators.nb; i++)
     {
         if (match->spectators.arr[i] != NULL)
         {
-            printf("while %d\n", i);
             match->spectators.arr[i]->status = FREE;
             write_client(match->spectators.arr[i]->sock, req);
         }
@@ -386,6 +382,41 @@ Status stop_spectate(Request request, Data* data, Client* client)
             }
         }
     }
+
+    return OK;
+}
+
+Status send_message(Request request, Data* data, Client* client)
+{
+    char* name = strtok(request.body, "\n");
+    char* message = strtok(NULL, "\n");
+
+    printf("nom: %s, message: %s\n", name, message);
+
+    Client* player = NULL;
+    for (int i = 0; i < data->clients.nb; i++)
+    {
+        if (strcmp(data->clients.arr[i].name, name) == 0 && strcmp(client->name, name) != 0)
+        {
+            player = &(data->clients.arr[i]);
+            break;
+        }
+    }
+
+    if(player == NULL)
+    {
+        return ERR_BAD_REQUEST;
+    }
+
+    char body[BUF_SIZE];
+    strcpy(body, client->name);
+    strcat(body, "\n");
+    strcat(body, message);
+    strcat(body, "\n");
+
+    char req[BUF_SIZE];
+    format_request(SEND_CHAT, body, req);
+    write_client(player->sock, req);
 
     return OK;
 }

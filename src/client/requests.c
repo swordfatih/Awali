@@ -140,3 +140,22 @@ void stop_spectate_request(Data* data)
     write_server(data->sock, request);
     set_state(data, INITIAL);
 }
+
+void send_message_request(Data* data)
+{
+    char buffer[BUF_SIZE];
+    printf("Entrez le nom du joueur destinataire: ");
+    scanf("%s", buffer);
+
+    char message[BUF_SIZE];
+    printf("\nEntrez votre message: ");
+    scanf("%s", message);
+
+    strcat(buffer, "\n");
+    strcat(buffer, message);
+    strcat(buffer, "\n");
+
+    char request[BUF_SIZE];
+    format_request(SEND_MESSAGE, buffer, request);
+    write_server(data->sock, request);
+}

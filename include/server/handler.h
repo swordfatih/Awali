@@ -51,5 +51,6 @@ Status  declare_forfeit(Request request, Data* data, Client* client);
 Status  send_chat(Request request, Data* data, Client* client);
 Status  start_spectate(Request request, Data* data, Client* client);
 Status  stop_spectate(Request request, Data* data, Client* client);
+Status  send_message(Request request, Data* data, Client* client);
 
 #endif /* guard */

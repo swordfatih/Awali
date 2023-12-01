@@ -13,7 +13,8 @@ void menu(State state)
         printf("2. Voir tous les joueurs.\n");
         printf("3. Defier un joueur.\n");
         printf("4. Observer une partie en cours.\n");
-        printf("5. Sortir\n");
+        printf("5. Envoyer un message.\n");
+        printf("6. Sortir\n");
         break;
     case CHALLENGE:
         printf(BBLU "\n\n[Actions possibles]\n" KCYN);
@@ -91,7 +92,10 @@ int initial_choices(Data* data, int choice)
     case 4:
         start_spectate_request(data);
         break;
-    case 5: // quitter le programme
+    case 5:
+        send_message_request(data);
+        break;
+    case 6: // quitter le programme
         return -1;
         break;
     default:

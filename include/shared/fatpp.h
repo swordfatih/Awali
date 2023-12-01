@@ -70,6 +70,7 @@ typedef enum
     SEND_CHAT,
     START_SPECTATE,
     STOP_SPECTATE,
+    SEND_MESSAGE,
 } RequestType;
 
 /**
