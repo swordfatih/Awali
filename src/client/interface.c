@@ -86,13 +86,13 @@ int initial_choices(Data* data, int choice)
     case 2: // demander la liste des joueurs
         ask_list_request(data);
         break;
-    case 3: // envoyer une demande de challende
+    case 3: // envoyer une demande de challenge
         send_challenge_request(data);
         break;
-    case 4:
+    case 4: // demander a observer une partie
         start_spectate_request(data);
         break;
-    case 5:
+    case 5: // envoyer un message a une joueur
         send_message_request(data);
         break;
     case 6: // quitter le programme

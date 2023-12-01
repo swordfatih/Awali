@@ -161,6 +161,8 @@ Status send_game_handler(Request request, Data* data)
     int opponent = (player + 1) % 2;
 
     int me = -1;
+    /* me rest -1 si ce client est observateur */
+    /* Sinon me est le numero du joueur*/
 
     for (int i = 0; i < 2; ++i)
     {
@@ -188,6 +190,7 @@ Status send_game_handler(Request request, Data* data)
     printf("\n");
 
     int i;
+    /* le plateau doit etre dessiné dans le sens du joueur */
     if (me == 1 || (me == -1 && player == 1))
     {
         printf(KGRA "┌────┬────┬────┬────┬────┬────┐\n" KNRM);

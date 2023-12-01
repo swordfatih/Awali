@@ -36,9 +36,10 @@ void app(const char* address, const char* name)
 
     fd_set rdfs;
 
-    /* send our name */
+    /* On envoie notre nom */
     write_server(sock, name);
 
+    /* Le serveur repond "0" sir le nom existe deja */
     read_server(sock, buffer);
     if (strcmp(buffer, "0") == 0){
         printf(KRED "[ERREUR] Connexion impossible, ce nom existe deja !\n");
@@ -85,7 +86,8 @@ void app(const char* address, const char* name)
                     buffer[BUF_SIZE - 1] = 0;
                 }
             }
-
+            
+            /* recupere le choix de l'utilisateur et effectue l'action lié*/
             int choice = strtol(buffer, NULL, 10);
             ex = handle_choices(&data, choice);
         }
@@ -100,8 +102,10 @@ void app(const char* address, const char* name)
                 break;
             }
 
+            /* Lecture de la requete envoyer par le serveur */
             Request request = parse_request(buffer);
 
+            /* Le serveur renvoie le status de la requete precedement envoyer */
             if (request.type == STATUS)
             {
                 Status      status = strtol(strtok(request.body, "\n"), NULL, 10);
@@ -112,6 +116,7 @@ void app(const char* address, const char* name)
                     handle_error(status, type, &data);
                 }
             }
+            /* On recoie une requete du serveur*/
             else
             {
                 handle_request(request, &data);

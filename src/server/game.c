@@ -9,8 +9,7 @@
 Game initGame()
 {
     Game g;
-    int  i = 0;
-    for (i = 0; i < 12; i++)
+    for (int i = 0; i < 12; i++)
     {
         g.board.cases[i] = 4;
     }

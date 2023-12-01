@@ -48,7 +48,7 @@ void app(void)
 
     while (1)
     {
-        printf("current number of clients : %d\n", data.clients.nb);
+        printf("[LOG] current number of clients : %d\n", data.clients.nb);
         FD_ZERO(&rdfs);
 
         /* add STDIN_FILENO */
@@ -94,6 +94,8 @@ void app(void)
                 continue;
             }
 
+
+            /* Verifie que le nom du nouveau utilisateur n'existe pas*/
             int twice = 0;
             for (i = 0 ; i < data.clients.nb ; i++){
                 if (strcmp(buffer, data.clients.arr[i].name) == 0){
@@ -102,7 +104,7 @@ void app(void)
                 }
             }
 
-            if (twice == 0) //C'est OK
+            if (twice == 0) //Si son nom existe pas, on l'ajoute a notre liste
             {
                 write_client(csock, "1");
 
@@ -116,12 +118,12 @@ void app(void)
                 data.clients.arr[data.clients.nb].status = FREE;
                 data.clients.nb++;
 
-                printf(KGRN "%s joined.\n" KNRM, buffer);
+                printf(KGRN "[LOG] %s joined.\n" KNRM, buffer);
                 
             } 
-            else // le nom existe deja
+            else // le nom existe deja, on lui refuse l'acces au server
             {
-                printf("Le joueur est existant\n");
+                printf(KRED "[LOG] Tentative de connexion avec le même pseudo\n" KNRM);
                 write_client(csock, "0");
                 closesocket(csock);
             }
@@ -149,7 +151,7 @@ void app(void)
 
                         if (status != OK)
                         {
-                            printf("Request of type %d and id %d failed\n", request.type, request.id);
+                            printf("[LOG] Request of type %d and id %d failed\n", request.type, request.id);
                         }
 
                         char body[BUF_SIZE], type_body[BUF_SIZE];
@@ -184,11 +186,11 @@ void clear_clients(Clients clients)
 
 void remove_client(Data* data, Client* clients, int to_remove, int* actual)
 {
-    printf(KRED "%s disconnected.\n" KNRM, clients[to_remove].name);
+    printf(KRED "[LOG] %s disconnected.\n" KNRM, clients[to_remove].name);
 
     if(clients[to_remove].current_opponent != NULL)
     {
-        Request request = {};
+        Request request;
         declare_forfeit(request, data, &clients[to_remove]);
     }
 

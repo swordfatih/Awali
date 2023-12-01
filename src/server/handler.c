@@ -141,7 +141,7 @@ Status send_challenge(Request request, Data* data, Client* client)
     }
 
     client->current_opponent = adversaire;
-    client->public_preference = public[0] == 'Y';
+    client->public_preference = (public[0] == 'Y');
     adversaire->current_opponent = client;
 
     adversaire->status = BUSY;
