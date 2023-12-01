@@ -28,34 +28,34 @@ typedef struct in_addr     IN_ADDR;
 
 #endif
 
-#define CRLF "\r\n"
-#define PORT 1977
-#define MAX_CLIENTS 100
-#define MAX_MATCHES 100
-#define BUF_SIZE 1024
-#define BODY_SIZE 512
-#define SEPARATOR "$"
-
-// colors
-#define KNRM "\x1B[0m"
-#define KRED "\x1B[31m"
-#define KGRN "\x1B[32m"
-#define KYEL "\x1B[33m"
-#define KBLU "\x1B[34m"
-#define KMAG "\x1B[35m"
-#define KCYN "\x1B[36m"
-#define KWHT "\x1B[37m"
-#define KGRA "\x1b[90m"
-
-// bold colors
-#define BBLU "\033[1;94m"
-#define KBLD "\x1b[1m"
-
-// background
-#define BGMAG "\x1b[45m"
+#define CRLF "\r\n"     ///< Fin de ligne
+#define PORT 1977       ///< Port du serveur
+#define MAX_CLIENTS 100 ///< Nombre maximum de clients
+#define MAX_MATCHES 100 ///< Nombre maximum de parties
+#define BUF_SIZE 1024   ///< Taille du buffer
+#define BODY_SIZE 512   ///< Taille du corps d'une requête
+#define SEPARATOR "$"   ///< Séparateur
 
 /**
- * Type of a request
+ * @brief Formattage des couleurs
+ *
+ */
+#define KNRM "\x1B[0m"    ///< reset
+#define KRED "\x1B[31m"   ///< red
+#define KGRN "\x1B[32m"   ///< green
+#define KYEL "\x1B[33m"   ///< yellow
+#define KBLU "\x1B[34m"   ///< blue
+#define KMAG "\x1B[35m"   ///< magenta
+#define KCYN "\x1B[36m"   ///< cyan
+#define KWHT "\x1B[37m"   ///< white
+#define KGRA "\x1b[90m"   ///< gray
+#define BBLU "\033[1;94m" ///< bold blue
+#define KBLD "\x1b[1m"    ///< bold
+#define BGMAG "\x1b[45m"  ///< background magenta
+
+/**
+ * @brief Type d'une requête
+ * 
  */
 typedef enum
 {
@@ -74,7 +74,8 @@ typedef enum
 } RequestType;
 
 /**
- * Header of a request
+ * @brief Requête structurée
+ * 
  */
 typedef struct
 {
@@ -84,7 +85,8 @@ typedef struct
 } Request;
 
 /**
- * Status of a response
+ * @brief Les status d'une requête
+ * 
  */
 typedef enum
 {

@@ -5,12 +5,18 @@
 #include "fatpp.h"
 
 /**
- * Format requests with a type and a body
+ * @brief Formatter les requêtes avec un type et un corps
+ *
+ * @param type    Type de la requête
+ * @param body    Corps de la requête
+ * @param request Paramètre de sortie
  */
 void format_request(RequestType type, char* body, char* request);
 
 /**
- * Update user's description
+ * @brief Les requêtes du client
+ * 
+ * @param data Données du client
  */
 void upsert_description_request(Data* data);
 void ask_list_request(Data* data);

@@ -3,8 +3,11 @@
 
 #include "fatpp.h"
 
-#define MAX_GAME 1024
+#define MAX_GAME 1024 ///< Nombre maximum de parties simultanées
 
+/**
+ * @brief Etats du client
+ */
 typedef enum
 {
     FREE,
@@ -12,6 +15,9 @@ typedef enum
     OFFLINE
 } ClientState;
 
+/**
+ * @brief Données du client
+ */
 typedef struct Client
 {
     SOCKET         sock;
@@ -23,6 +29,11 @@ typedef struct Client
     int            public_preference;
 } Client;
 
+/**
+ * @brief Convertit un état en chaîne de caractères
+ * @param s Etat
+ * @return const char* Chaîne de caractères
+ */
 const char* client_status_to_string(ClientState s);
 
 #endif /* guard */

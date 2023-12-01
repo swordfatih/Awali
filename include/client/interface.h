@@ -3,14 +3,36 @@
 
 #include "client.h"
 
+/**
+ * @brief Menu selon l'état du client
+ * @param state Etat du client
+ */
 void menu(State state);
+
+/**
+ * @brief Set the state object
+ *
+ * @param data  Données du client
+ * @param value Nouvel état
+ */
 void set_state(Data* data, State value);
 
-/*
- * Handle menu choices of the user
+/**
+ * @brief Gestion des choix du menu
+ *
+ * @param data   Données du client
+ * @param choice Choix
+ * @return int 1 si quitte le programme, 0 sinon
  */
 int handle_choices(Data* data, int choice);
 
+/**
+ * @brief Gestion des choix pour chaque menu
+ * 
+ * @param data   Données du client
+ * @param choice Choix
+ * @return int 1 si quitte le programme, 0 sinon
+ */
 int initial_choices(Data* data, int choice);
 int challenge_choices(Data* data, int choice);
 int game_choices(Data* data, int choice);
