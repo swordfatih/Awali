@@ -39,6 +39,12 @@ void app(const char* address, const char* name)
     /* send our name */
     write_server(sock, name);
 
+    read_server(sock, buffer);
+    if (strcmp(buffer, "0") == 0){
+        printf(KRED "[ERREUR] Connexion impossible, ce nom existe deja !\n");
+        exit(-1);
+    }
+
     Data data;
     data.sock = sock;
     set_state(&data, INITIAL);

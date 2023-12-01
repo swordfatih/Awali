@@ -154,7 +154,7 @@ Status send_game_handler(Request request, Data* data)
 
     int me = -1;
 
-    for (int i = 0; i < 2; ++i)10
+    for (int i = 0; i < 2; ++i)
     {
         if (strcmp(players[i], data->name) == 0)
         {
